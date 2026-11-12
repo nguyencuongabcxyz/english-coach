@@ -6,6 +6,7 @@ import { one } from "@/lib/db";
 import { initials } from "@/components/AppShell";
 import { Breadcrumb, LevelChip, PageHeader, shortDate } from "@/components/ui";
 import { getTopic } from "@/lib/topics";
+import { getAllTopics } from "@/lib/topics-db";
 import { fmt, SKILL_SHORT_VI, SKILL_VI, SKILLS } from "@/lib/skills";
 import { finalScores, type UserRow } from "@/lib/types";
 
@@ -16,14 +17,14 @@ export default async function StudentDetail({ params }: PageProps<"/teacher/stud
   const user = await requireUser("teacher");
   const student = await one<UserRow>(`SELECT * FROM users WHERE id = $1 AND class_id = $2 AND role = 'student'`, [id, user.class_id]);
   if (!student) notFound();
-  const p = await studentProfile(student.id);
+  const [p, all] = await Promise.all([studentProfile(student.id), getAllTopics()]);
   const scored = p.sessions.filter((s) => finalScores(s));
   const max = 10;
 
   return (
     <>
       <Breadcrumb items={[{ label: "Tổng quan lớp", href: "/teacher" }, { label: student.name }]} />
-      <PageHeader title={student.name} subtitle={`${student.login} · ${p.count} lượt luyện · ${p.topicsDone.length}/5 chủ đề`} />
+      <PageHeader title={student.name} subtitle={`${student.login} · ${p.count} lượt luyện · ${p.topicsDone.length} chủ đề đã luyện`} />
 
       <div className="grid grid-cols-1 gap-4 px-5 pt-6 sm:px-9 lg:grid-cols-[300px_1fr]">
         <section className="flex flex-col gap-3 rounded-[22px] bg-lilac p-5">
@@ -109,7 +110,7 @@ export default async function StudentDetail({ params }: PageProps<"/teacher/stud
                         </Link>
                       </th>
                       <td className="px-3 py-3">
-                        {getTopic(s.topic_id)?.title} · <span className="text-muted">{s.title}</span>
+                        {getTopic(all, s.topic_id)?.title} · <span className="text-muted">{s.title}</span>
                       </td>
                       <td className="px-3 py-3 font-extrabold">{fmt(sc.total)}</td>
                       {SKILLS.map((k) => (

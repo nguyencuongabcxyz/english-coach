@@ -4,13 +4,14 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { sql } from "@/lib/db";
 import { createPracticeSession, getAnswers, getSession, studentProfile } from "@/lib/data";
-import { findSubtopic, getTopic, TOPICS } from "@/lib/topics";
+import { findSubtopic, getTopic } from "@/lib/topics";
+import { getAllTopics, getTopics } from "@/lib/topics-db";
 import { activityFor, averageScores, SKILLS, totalOf, type Skill } from "@/lib/skills";
 import { summarizeSession } from "@/lib/ai";
 
 export async function startTopic(subId: string) {
   const user = await requireUser("student");
-  const found = findSubtopic(subId);
+  const found = findSubtopic(await getTopics(), subId);
   if (!found) redirect("/topics");
   const id = await createPracticeSession({
     studentId: user.id,
@@ -30,8 +31,10 @@ export async function startActivity(skill: Skill, topicId?: string) {
   const user = await requireUser("student");
   if (!SKILLS.includes(skill)) redirect("/dashboard");
   const profile = await studentProfile(user.id);
-  const topic = getTopic(topicId ?? profile.latest?.topic_id ?? "family") ?? TOPICS[0];
-  const sub = findSubtopic(profile.latest?.subtopic ?? "")?.sub ?? topic.subtopics[0];
+  const topics = await getTopics();
+  const topic = getTopic(topics, topicId ?? profile.latest?.topic_id ?? "") ?? topics[0];
+  if (!topic) redirect("/topics");
+  const sub = findSubtopic(topics, profile.latest?.subtopic ?? "")?.sub ?? topic.subtopics[0];
   const a = activityFor(skill, topic.id, topic.title, sub.vocab);
   const id = await createPracticeSession({
     studentId: user.id,
@@ -85,7 +88,7 @@ export async function finishSession(sessionId: string) {
   if (!evaluated.length) redirect(`/practice/${s.id}`);
 
   const avg = averageScores(evaluated.map((a) => a.evaluation!.scores))!;
-  const topic = getTopic(s.topic_id) ?? TOPICS[0];
+  const topic = getTopic(await getAllTopics(), s.topic_id) ?? { id: s.topic_id, title: s.title };
   let summary;
   try {
     summary = await summarizeSession({

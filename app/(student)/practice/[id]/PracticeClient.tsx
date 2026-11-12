@@ -459,6 +459,7 @@ export function PracticeClient({ session, initialAnswers, initials, demo }: Prop
               Trọng tâm hôm nay: {session.focus ?? "Trả lời đầy đủ, rõ ràng"}
             </div>
           </section>
+          {session.vocab.length > 0 && (
           <section className="flex flex-col gap-3 rounded-[20px] border border-line p-[18px]">
             <h2 className="m-0 text-base font-bold">
               {session.kind === "activity" || session.instruction ? "Từ cần dùng" : "Từ vựng hữu ích"}
@@ -471,6 +472,7 @@ export function PracticeClient({ session, initialAnswers, initials, demo }: Prop
               ))}
             </div>
           </section>
+          )}
           <p className="m-0 px-1 text-xs leading-normal text-muted">
             Bản ghi âm được lưu vào hồ sơ luyện tập để giáo viên có thể xem lại.
           </p>

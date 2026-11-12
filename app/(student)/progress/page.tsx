@@ -4,7 +4,8 @@ import { studentProfile } from "@/lib/data";
 import { one } from "@/lib/db";
 import { initials } from "@/components/AppShell";
 import { Breadcrumb, btn, EmptyState, PageHeader, shortDate } from "@/components/ui";
-import { getTopic, TOPICS } from "@/lib/topics";
+import { getTopic } from "@/lib/topics";
+import { getAllTopics } from "@/lib/topics-db";
 import { SKILL_SHORT_VI } from "@/lib/skills";
 import { finalScores } from "@/lib/types";
 import { ProgressCharts } from "./ProgressCharts";
@@ -13,9 +14,10 @@ export const metadata = { title: "Tiến bộ của tôi · AI English Speaking 
 
 export default async function ProgressPage() {
   const user = await requireUser("student");
-  const [p, cls] = await Promise.all([
+  const [p, cls, all] = await Promise.all([
     studentProfile(user.id),
     one<{ name: string; grade: number }>(`SELECT name, grade FROM classes WHERE id = $1`, [user.class_id]),
+    getAllTopics(),
   ]);
   const rows = p.sessions
     .filter((s) => finalScores(s))
@@ -25,7 +27,7 @@ export default async function ProgressPage() {
         id: s.id,
         seq: s.seq,
         topicId: s.topic_id,
-        topic: getTopic(s.topic_id)?.title ?? s.topic_id,
+        topic: getTopic(all, s.topic_id)?.title ?? s.topic_id,
         title: s.title,
         date: shortDate(s.completed_at),
         reviewed: s.teacher_status === "approved",
@@ -60,7 +62,7 @@ export default async function ProgressPage() {
       ) : (
         <ProgressCharts
           rows={rows}
-          topics={TOPICS.filter((t) => p.topicsDone.includes(t.id)).map((t) => ({ id: t.id, title: t.title }))}
+          topics={all.filter((t) => p.topicsDone.includes(t.id)).map((t) => ({ id: t.id, title: t.title }))}
           profile={
             <section aria-label="Hồ sơ học sinh" className="flex flex-[1_1_280px] flex-col overflow-hidden rounded-[22px] bg-lilac">
               <div className="flex flex-col gap-3.5 p-5">
@@ -76,7 +78,7 @@ export default async function ProgressPage() {
                   <Item k="Khối / Lớp" v={cls ? `${cls.grade} / ${cls.name}` : "–"} />
                   <Item
                     k="Chủ đề đã luyện"
-                    v={p.topicsDone.map((id) => getTopic(id)?.title).join(", ") || "–"}
+                    v={p.topicsDone.map((id) => getTopic(all, id)?.title ?? id).join(", ") || "–"}
                   />
                   <Item k="Số lần luyện" v={String(p.count)} />
                   <Item k="Kỹ năng còn hạn chế" v={p.weak.map((k) => SKILL_SHORT_VI[k]).join(", ") || "Không có"} last />

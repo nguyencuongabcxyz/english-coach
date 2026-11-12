@@ -103,6 +103,27 @@ const SCHEMA = [
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
   )`,
   `CREATE INDEX IF NOT EXISTS idx_answers_session ON answers(session_id, idx)`,
+  `CREATE TABLE IF NOT EXISTS topics (
+    id TEXT PRIMARY KEY,
+    sort INT NOT NULL DEFAULT 0,
+    title TEXT NOT NULL,
+    vi TEXT NOT NULL DEFAULT '',
+    theme TEXT NOT NULL DEFAULT 'lilac',
+    hidden BOOLEAN NOT NULL DEFAULT FALSE,
+    updated_by TEXT,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  )`,
+  `CREATE TABLE IF NOT EXISTS subtopics (
+    id TEXT PRIMARY KEY,
+    topic_id TEXT NOT NULL,
+    sort INT NOT NULL DEFAULT 0,
+    name TEXT NOT NULL,
+    questions JSONB NOT NULL DEFAULT '[]',
+    tips JSONB NOT NULL DEFAULT '[]',
+    vocab JSONB NOT NULL DEFAULT '[]',
+    hidden BOOLEAN NOT NULL DEFAULT FALSE
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_subtopics_topic ON subtopics(topic_id, sort)`,
 ];
 
 async function init() {
@@ -112,6 +133,11 @@ async function init() {
   if (Number(n) === 0) {
     const { seed } = await import("./seed");
     await seed(q);
+  }
+  const [{ n: topicCount }] = await q(`SELECT count(*)::int AS n FROM topics`);
+  if (Number(topicCount) === 0) {
+    const { seedTopics } = await import("./seed");
+    await seedTopics(q);
   }
 }
 

@@ -4,7 +4,8 @@ import { requireUser } from "@/lib/auth";
 import { inProgressSession, studentProfile } from "@/lib/data";
 import { Breadcrumb, btn, PageHeader, Pill } from "@/components/ui";
 import { Icon, ICON } from "@/components/icons";
-import { findSubtopic, getTopic, TOPICS } from "@/lib/topics";
+import { findSubtopic, getTopic } from "@/lib/topics";
+import { getTopics } from "@/lib/topics-db";
 import { activityFor, SKILL_SHORT_VI, SKILL_VI } from "@/lib/skills";
 import { startActivity, startTopic } from "@/app/actions/practice";
 
@@ -14,16 +15,16 @@ export default async function PracticeIndex() {
   const user = await requireUser("student");
   const open = await inProgressSession(user.id);
   if (open) redirect(`/practice/${open.id}`);
-  const profile = await studentProfile(user.id);
+  const [profile, TOPICS] = await Promise.all([studentProfile(user.id), getTopics()]);
   const latest = profile.latest;
-  const topic = getTopic(latest?.topic_id ?? "family") ?? TOPICS[0];
+  const topic = getTopic(TOPICS, latest?.topic_id ?? "") ?? TOPICS[0];
   const suggestion =
     latest?.summary?.nextActivity ?? (profile.weakest ? activityFor(profile.weakest, topic.id, topic.title) : null);
   const untried = TOPICS.flatMap((t) => t.subtopics.map((s) => ({ t, s }))).filter(
     ({ s }) => !profile.sessions.some((x) => x.subtopic === s.id),
   );
   const fresh = untried[0] ?? { t: topic, s: topic.subtopics[0] };
-  const again = latest ? findSubtopic(latest.subtopic) : null;
+  const again = latest ? findSubtopic(TOPICS, latest.subtopic) : null;
 
   return (
     <>

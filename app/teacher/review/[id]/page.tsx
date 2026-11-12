@@ -6,6 +6,7 @@ import { one } from "@/lib/db";
 import { Breadcrumb, btn, formatDateTime } from "@/components/ui";
 import { AnswerDetails, pickNotes, ScoreOverview, StrengthsImprovements } from "@/components/FeedbackView";
 import { getTopic } from "@/lib/topics";
+import { getAllTopics } from "@/lib/topics-db";
 import { SKILL_VI, SKILLS } from "@/lib/skills";
 import { submitReview } from "@/app/actions/teacher";
 import type { UserRow } from "@/lib/types";
@@ -20,7 +21,7 @@ export default async function ReviewDetail({ params, searchParams }: PageProps<"
   if (!session || session.status !== "completed") notFound();
   const student = await one<UserRow>(`SELECT * FROM users WHERE id = $1 AND class_id = $2`, [session.student_id, user.class_id]);
   if (!student) notFound();
-  const answers = await getAnswers(session.id);
+  const [answers, topics] = await Promise.all([getAnswers(session.id), getAllTopics()]);
   const base = session.teacher_scores ?? session.scores!;
   const reviewed = session.teacher_status === "approved";
 
@@ -44,7 +45,7 @@ export default async function ReviewDetail({ params, searchParams }: PageProps<"
             {student.name} · {session.title}
           </h1>
           <p className="m-0 text-sm text-muted">
-            {student.login} · {getTopic(session.topic_id)?.title} · {formatDateTime(session.completed_at)} ·{" "}
+            {student.login} · {getTopic(topics, session.topic_id)?.title} · {formatDateTime(session.completed_at)} ·{" "}
             {reviewed ? "Đã duyệt" : "Chờ duyệt"}
           </p>
         </div>

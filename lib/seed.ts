@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import type { QueryFn } from "./db";
-import { findSubtopic } from "./topics";
+import { DEFAULT_TOPICS, defaultThemeOf, findDefaultSubtopic } from "./topics";
 import { activityFor, SKILL_VI, SKILLS, totalOf, weakestSkill, type Skill } from "./skills";
 import type { AnswerEvaluation, SessionSummary, SpeechMetrics } from "./types";
 
@@ -122,7 +122,7 @@ export async function seed(q: QueryFn) {
   );
 
   async function addSession(studentId: string, seq: number, plan: Plan, withSample: boolean) {
-    const found = findSubtopic(plan.sub)!;
+    const found = findDefaultSubtopic(plan.sub)!;
     const id = `s-${studentId}-${seq}`;
     const total = totalOf(plan.s);
     const weakest = weakestSkill(plan.s);
@@ -209,6 +209,23 @@ export async function seed(q: QueryFn) {
       if (k === n - 1) for (const sk of SKILLS) s[sk] = st.base[sk];
       const daysAgo = k === n - 1 ? (st.lastActiveDaysAgo ?? 1) : start - k * 3;
       await addSession(id, k + 1, { sub: SUBS[(k + id.length) % SUBS.length], daysAgo, s, reviewed: k < n - 2 }, false);
+    }
+  }
+}
+
+/** Copies the built-in topics into the database (runs once, when the topics table is empty). */
+export async function seedTopics(q: QueryFn) {
+  for (const [i, t] of DEFAULT_TOPICS.entries()) {
+    await q(
+      `INSERT INTO topics (id, sort, title, vi, theme) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (id) DO NOTHING`,
+      [t.id, i + 1, t.title, t.vi, defaultThemeOf(t.id)],
+    );
+    for (const [j, s] of t.subtopics.entries()) {
+      await q(
+        `INSERT INTO subtopics (id, topic_id, sort, name, questions, tips, vocab) VALUES ($1,$2,$3,$4,$5,$6,$7)
+         ON CONFLICT (id) DO NOTHING`,
+        [s.id, t.id, j + 1, s.name, JSON.stringify(s.questions), JSON.stringify(s.tips), JSON.stringify(s.vocab)],
+      );
     }
   }
 }

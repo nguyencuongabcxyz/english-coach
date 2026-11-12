@@ -1,6 +1,5 @@
 import "server-only";
 import { one, sql } from "./db";
-import { TOPICS } from "./topics";
 import {
   averageScores,
   round1,
@@ -68,7 +67,7 @@ export function buildProfile(sessions: SessionRow[]): StudentProfile {
     sessions,
     count: sessions.length,
     weekCount: sessions.filter((s) => new Date(s.completed_at ?? s.started_at).getTime() >= weekAgo).length,
-    topicsDone: TOPICS.filter((t) => sessions.some((s) => s.topic_id === t.id)).map((t) => t.id),
+    topicsDone: [...new Set(sessions.map((s) => s.topic_id))],
     latest,
     latestScore,
     firstScore,

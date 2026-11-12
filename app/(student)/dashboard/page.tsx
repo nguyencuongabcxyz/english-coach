@@ -3,7 +3,8 @@ import { requireUser } from "@/lib/auth";
 import { inProgressSession, studentProfile } from "@/lib/data";
 import { Icon, ICON } from "@/components/icons";
 import { Breadcrumb, btn, formatDateTime, Pill } from "@/components/ui";
-import { findSubtopic, getTopic, TOPICS, topicColors } from "@/lib/topics";
+import { findSubtopic, getTopic, topicColors } from "@/lib/topics";
+import { getAllTopics, getTopics } from "@/lib/topics-db";
 import { activityFor, fmt, level, SKILL_SHORT_VI, SKILL_VI, SKILLS } from "@/lib/skills";
 import { finalScores } from "@/lib/types";
 import { startActivity, startTopic } from "@/app/actions/practice";
@@ -28,10 +29,12 @@ const CYCLE = [
 
 export default async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
   const user = await requireUser("student");
-  const [profile, resume, sp] = await Promise.all([
+  const [profile, resume, sp, TOPICS, ALL] = await Promise.all([
     studentProfile(user.id),
     inProgressSession(user.id),
     searchParams,
+    getTopics(),
+    getAllTopics(),
   ]);
   const parts = user.name.trim().split(/\s+/);
   const firstName = parts.length >= 3 ? parts.slice(-2).join(" ") : parts.at(-1);
@@ -42,9 +45,14 @@ export default async function Dashboard({ searchParams }: PageProps<"/dashboard"
   const suggestion =
     latest?.summary?.nextActivity ??
     (profile.weakest
-      ? activityFor(profile.weakest, latest?.topic_id ?? "family", getTopic(latest?.topic_id ?? "family")!.title)
+      ? activityFor(
+          profile.weakest,
+          latest?.topic_id ?? TOPICS[0]?.id ?? "family",
+          getTopic(ALL, latest?.topic_id ?? "")?.title ?? TOPICS[0]?.title ?? "Family",
+        )
       : null);
   const welcome = sp.welcome === "1" || profile.count === 0;
+  const trial = findSubtopic(TOPICS, "family-activities") ?? (TOPICS[0] ? { topic: TOPICS[0], sub: TOPICS[0].subtopics[0] } : null);
 
   return (
     <>
@@ -78,7 +86,7 @@ export default async function Dashboard({ searchParams }: PageProps<"/dashboard"
         <Stat label="Số lần luyện tập" value={String(profile.count)} note={`+${profile.weekCount} trong tuần này`} tone="good" />
         <Stat
           label="Chủ đề đã luyện"
-          value={String(profile.topicsDone.length)}
+          value={String(TOPICS.length - notDone.length)}
           suffix={`/ ${TOPICS.length}`}
           note={notDone.length ? `Chưa luyện chủ đề ${notDone.map((t) => t.title).join(", ")}` : "Đã luyện đủ các chủ đề"}
         />
@@ -100,7 +108,7 @@ export default async function Dashboard({ searchParams }: PageProps<"/dashboard"
 
       <div className="grid grid-cols-1 gap-4 px-5 pb-5 sm:px-9 md:grid-cols-[repeat(auto-fit,minmax(320px,1fr))]">
         {/* Suggestion card */}
-        {welcome && !latest ? (
+        {welcome && !latest && trial ? (
           <section className="flex flex-col overflow-hidden rounded-[22px] bg-lilac">
             <div className="flex flex-col gap-3.5 p-5 sm:p-[22px]">
               <Pill className="self-start font-bold">Chào mừng bạn!</Pill>
@@ -110,7 +118,7 @@ export default async function Dashboard({ searchParams }: PageProps<"/dashboard"
                   <Icon d={ICON.mic} size={20} stroke="#2E2F5C" />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <span className="text-[15px] font-bold">Family activities</span>
+                  <span className="text-[15px] font-bold">{trial.sub.name}</span>
                   <span className="text-[13px] text-muted">Trả lời một câu hỏi quen thuộc. Kết quả dùng để gợi ý bài luyện đầu tiên.</span>
                 </div>
               </div>
@@ -120,7 +128,7 @@ export default async function Dashboard({ searchParams }: PageProps<"/dashboard"
                 <Pill>Nói thử</Pill>
                 <Pill>~2 phút</Pill>
               </div>
-              <form action={startTopic.bind(null, "family-activities")}>
+              <form action={startTopic.bind(null, trial.sub.id)}>
                 <button className={btn.dark}>Bắt đầu ngay</button>
               </form>
             </div>
@@ -202,9 +210,9 @@ export default async function Dashboard({ searchParams }: PageProps<"/dashboard"
       <div className="grid grid-cols-1 gap-3.5 px-5 pb-6 sm:grid-cols-2 sm:px-9 xl:grid-cols-3">
         {recent.length === 0 && <p className="m-0 text-sm text-muted">Chưa có buổi luyện nào.</p>}
         {recent.map((s) => {
-          const c = topicColors(s.topic_id);
+          const c = topicColors(ALL, s.topic_id);
           const sc = finalScores(s);
-          const topic = getTopic(s.topic_id);
+          const topic = getTopic(ALL, s.topic_id);
           return (
             <Link
               key={s.id}
@@ -225,7 +233,7 @@ export default async function Dashboard({ searchParams }: PageProps<"/dashboard"
                 <div className="flex flex-col gap-0.5 rounded-xl bg-white p-3">
                   <span className="text-[13px] font-semibold">{s.title}</span>
                   <span className="text-xs text-muted">
-                    {s.kind === "activity" ? "Bài luyện cá nhân hoá" : `${findSubtopic(s.subtopic)?.sub.questions.length ?? s.questions.length} câu hỏi`}
+                    {s.kind === "activity" ? "Bài luyện cá nhân hoá" : `${findSubtopic(ALL, s.subtopic)?.sub.questions.length ?? s.questions.length} câu hỏi`}
                   </span>
                 </div>
               </div>

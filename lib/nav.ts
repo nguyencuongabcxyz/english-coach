@@ -1,6 +1,6 @@
 import { ICON } from "@/components/icons";
 
-export type NavKey = "overview" | "topics" | "practice" | "feedback" | "progress" | "teacher" | "review";
+export type NavKey = "overview" | "topics" | "practice" | "feedback" | "progress" | "teacher" | "review" | "teacherTopics";
 export type NavItem = { key: NavKey; label: string; short: string; href: string; d: string; badge?: string };
 
 export const STUDENT_NAV: NavItem[] = [
@@ -14,4 +14,5 @@ export const STUDENT_NAV: NavItem[] = [
 export const TEACHER_NAV: NavItem[] = [
   { key: "teacher", label: "Tổng quan lớp", short: "Lớp học", href: "/teacher", d: ICON.classGrid },
   { key: "review", label: "Duyệt bài luyện", short: "Duyệt bài", href: "/teacher/review", d: ICON.review },
+  { key: "teacherTopics", label: "Chủ đề luyện nói", short: "Chủ đề", href: "/teacher/topics", d: ICON.topics },
 ];

@@ -5,6 +5,7 @@ import { initials } from "@/components/AppShell";
 import { Breadcrumb, formatDateTime, PageHeader } from "@/components/ui";
 import { Icon, ICON } from "@/components/icons";
 import { getTopic } from "@/lib/topics";
+import { getAllTopics } from "@/lib/topics-db";
 import { fmt } from "@/lib/skills";
 import { finalScores } from "@/lib/types";
 
@@ -15,7 +16,7 @@ export default async function ReviewList({ searchParams }: PageProps<"/teacher/r
   const sp = await searchParams;
   const tab = sp.tab === "approved" ? "approved" : sp.tab === "all" ? "all" : "pending";
   const student = typeof sp.student === "string" ? sp.student : null;
-  const all = await pendingReviews(user.class_id!);
+  const [all, topics] = await Promise.all([pendingReviews(user.class_id!), getAllTopics()]);
   const scoped = student ? all.filter((s) => s.student_id === student) : all;
   const list = scoped.filter((s) => tab === "all" || s.teacher_status === tab);
   const count = (t: string) => scoped.filter((s) => t === "all" || s.teacher_status === t).length;
@@ -58,7 +59,7 @@ export default async function ReviewList({ searchParams }: PageProps<"/teacher/r
       <ul className="m-0 flex list-none flex-col gap-2.5 px-5 pt-4 pb-8 sm:px-9">
         {list.length === 0 && <li className="rounded-2xl bg-soft p-5 text-sm text-muted">Không có bài luyện nào.</li>}
         {list.map((s) => {
-          const t = getTopic(s.topic_id);
+          const t = getTopic(topics, s.topic_id);
           return (
             <li key={s.id}>
               <Link

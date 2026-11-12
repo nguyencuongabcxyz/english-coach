@@ -5,7 +5,7 @@ import { initials } from "@/components/AppShell";
 import { Breadcrumb, btn } from "@/components/ui";
 import { Icon, ICON } from "@/components/icons";
 import { fmt, level, SKILL_SHORT_VI, SKILL_VI, SKILLS, weakestSkill } from "@/lib/skills";
-import { TOPICS } from "@/lib/topics";
+import { getTopics } from "@/lib/topics-db";
 import { issueActivationCode } from "@/app/actions/teacher";
 import type { StudentSummary } from "@/lib/data";
 
@@ -23,7 +23,7 @@ const STATUS: Record<StudentSummary["status"], { label: string; bg: string; fg: 
 
 export default async function TeacherHome() {
   const user = await requireUser("teacher");
-  const [o, cls] = await Promise.all([classOverview(user.class_id!), getClass(user.class_id!)]);
+  const [o, cls, topics] = await Promise.all([classOverview(user.class_id!), getClass(user.class_id!), getTopics()]);
   const weakest = o.skillAvg ? weakestSkill(o.skillAvg) : null;
   const firstName = user.name.split(" ").at(-1);
 
@@ -171,7 +171,7 @@ export default async function TeacherHome() {
                     </th>
                     <td className="px-3 py-3">{s.profile.count}</td>
                     <td className="px-3 py-3">
-                      {s.profile.topicsDone.length}/{TOPICS.length}
+                      {s.profile.topicsDone.filter((id) => topics.some((t) => t.id === id)).length}/{topics.length}
                     </td>
                     <td className="px-3 py-3 font-bold">{fmt(s.avg?.total)}</td>
                     <td className="px-3 py-3">{w ? SKILL_SHORT_VI[w] : "–"}</td>

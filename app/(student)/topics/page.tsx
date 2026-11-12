@@ -1,14 +1,14 @@
 import { requireUser } from "@/lib/auth";
 import { listCompletedSessions } from "@/lib/data";
 import { Breadcrumb, PageHeader } from "@/components/ui";
-import { TOPICS } from "@/lib/topics";
+import { getTopics } from "@/lib/topics-db";
 import { TopicsBrowser } from "./TopicsBrowser";
 
 export const metadata = { title: "Chủ đề luyện nói · AI English Speaking Coach" };
 
 export default async function TopicsPage() {
   const user = await requireUser("student");
-  const sessions = await listCompletedSessions(user.id);
+  const [sessions, TOPICS] = await Promise.all([listCompletedSessions(user.id), getTopics()]);
   const counts: Record<string, number> = {};
   for (const s of sessions) counts[s.topic_id] = (counts[s.topic_id] ?? 0) + 1;
 

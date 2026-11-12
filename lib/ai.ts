@@ -266,3 +266,54 @@ function demoEvaluation(transcript: string): AnswerEvaluation {
     demo: true,
   };
 }
+
+const SUBTOPIC_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["questions", "tips", "vocab"],
+  properties: {
+    questions: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["q", "hint"],
+        properties: { q: { type: "string" }, hint: { type: "string" } },
+      },
+    },
+    tips: { type: "array", items: { type: "string" } },
+    vocab: { type: "array", items: { type: "string" } },
+  },
+} as const;
+
+/** Drafts speaking questions, Vietnamese answer tips and useful vocabulary for a teacher's new subtopic. */
+export async function draftSubtopic(input: {
+  topic: string;
+  subtopic: string;
+  count: number;
+}): Promise<{ questions: { q: string; hint: string }[]; tips: string[]; vocab: string[]; demo?: boolean }> {
+  if (!aiEnabled()) {
+    return {
+      questions: [
+        { q: `What do you think about ${input.subtopic.toLowerCase()}?`, hint: `Bạn nghĩ gì về ${input.subtopic}?` },
+        { q: `Describe your own experience with ${input.subtopic.toLowerCase()}.`, hint: "Kể lại trải nghiệm của bạn." },
+        { q: `Why is ${input.subtopic.toLowerCase()} important for teenagers?`, hint: "Vì sao điều này quan trọng với thanh thiếu niên?" },
+      ].slice(0, input.count),
+      tips: ["Nêu ý chính rồi giải thích bằng because.", "Đưa một ví dụ cụ thể.", "Kết thúc bằng một câu tổng kết."],
+      vocab: [],
+      demo: true,
+    };
+  }
+  const system = `You write speaking practice material for Vietnamese upper-secondary (THPT) students, CEFR A2–B1.
+Return:
+- questions: exactly ${input.count} open questions in simple English that invite 30–60 seconds of speaking, each with "hint": a short Vietnamese translation.
+- tips: 3 short Vietnamese tips on how to answer well (structure, linking words, examples).
+- vocab: 5 useful English words or phrases for the subtopic.`;
+  const r = await chatJSON<{ questions: { q: string; hint: string }[]; tips: string[]; vocab: string[] }>(
+    system,
+    `Topic: ${input.topic}\nSubtopic: ${input.subtopic}`,
+    "subtopic_draft",
+    SUBTOPIC_SCHEMA,
+  );
+  return { questions: r.questions.slice(0, input.count), tips: r.tips.slice(0, 5), vocab: r.vocab.slice(0, 8) };
+}

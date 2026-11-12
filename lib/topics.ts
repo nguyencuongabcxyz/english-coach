@@ -1,5 +1,6 @@
-// Speaking topics for Vietnamese upper-secondary (THPT) students.
-// Module 2 of the product spec. Add new topics/subtopics here to extend the curriculum.
+// Speaking topics for Vietnamese upper-secondary (THPT) students (Module 2).
+// These are the built-in defaults copied into the database on first run.
+// Teachers then add and edit topics in the app (/teacher/topics); see lib/topics-db.ts.
 
 export type Question = { q: string; hint: string };
 export type Subtopic = {
@@ -8,19 +9,33 @@ export type Subtopic = {
   questions: Question[];
   tips: string[];
   vocab: string[];
+  hidden?: boolean;
 };
 export type Topic = {
   id: string;
   n: string;
   title: string;
   vi: string;
+  theme?: ThemeKey;
   bg: string;
   foot: string;
   ink: string;
+  hidden?: boolean;
   subtopics: Subtopic[];
 };
 
-export const TOPICS: Topic[] = [
+/** Colour themes a teacher can pick for a topic card (from the design palette). */
+export const THEMES = {
+  lilac: { label: "Tím", bg: "#CDD0F8", foot: "#B9BDEF", ink: "#2E2F5C" },
+  mint: { label: "Xanh lá", bg: "#C8F2DD", foot: "#A9E3C6", ink: "#14533A" },
+  sand: { label: "Vàng", bg: "#FBE5BC", foot: "#EFD39F", ink: "#6B4A10" },
+  peach: { label: "Cam", bg: "#F6CBBF", foot: "#E9B3A5", ink: "#7A2D1C" },
+  sky: { label: "Xanh dương", bg: "#CDE6F7", foot: "#B0D3EC", ink: "#1F4A66" },
+} as const;
+export type ThemeKey = keyof typeof THEMES;
+export const THEME_KEYS = Object.keys(THEMES) as ThemeKey[];
+
+export const DEFAULT_TOPICS: Topic[] = [
   {
     id: "family",
     n: "01",
@@ -333,21 +348,36 @@ export const TOPICS: Topic[] = [
   },
 ];
 
-export function getTopic(id: string) {
-  return TOPICS.find((t) => t.id === id);
+const DEFAULT_THEME: Record<string, ThemeKey> = {
+  family: "lilac",
+  education: "mint",
+  environment: "sand",
+  future: "peach",
+  culture: "sky",
+};
+export const defaultThemeOf = (topicId: string): ThemeKey => DEFAULT_THEME[topicId] ?? "lilac";
+
+/** Helpers that work on a topic list loaded from the database. */
+export function getTopic(list: Topic[], id: string) {
+  return list.find((t) => t.id === id);
 }
 
-export function findSubtopic(subId: string) {
-  for (const t of TOPICS) {
+export function findSubtopic(list: Topic[], subId: string) {
+  for (const t of list) {
     const s = t.subtopics.find((x) => x.id === subId);
     if (s) return { topic: t, sub: s };
   }
   return null;
 }
 
-export function topicColors(topicId: string) {
-  const t = getTopic(topicId);
+export function topicColors(list: Topic[], topicId: string) {
+  const t = getTopic(list, topicId);
   return t
     ? { bg: t.bg, foot: t.foot, ink: t.ink }
     : { bg: "#CDD0F8", foot: "#B9BDEF", ink: "#2E2F5C" };
+}
+
+/** Lookup in the built-in defaults only (used by the demo seed). */
+export function findDefaultSubtopic(subId: string) {
+  return findSubtopic(DEFAULT_TOPICS, subId);
 }
