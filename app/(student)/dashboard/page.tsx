@@ -4,7 +4,7 @@ import { inProgressSession, studentProfile } from "@/lib/data";
 import { Icon, ICON } from "@/components/icons";
 import { Breadcrumb, btn, formatDateTime, Pill } from "@/components/ui";
 import { findSubtopic, getTopic, topicColors } from "@/lib/topics";
-import { getAllTopics, getTopics } from "@/lib/topics-db";
+import { getAllTopics, getTopics, ownerIdFor } from "@/lib/topics-db";
 import { activityFor, fmt, level, SKILL_SHORT_VI, SKILL_VI, SKILLS } from "@/lib/skills";
 import { finalScores } from "@/lib/types";
 import { startActivity, startTopic } from "@/app/actions/practice";
@@ -33,8 +33,8 @@ export default async function Dashboard({ searchParams }: PageProps<"/dashboard"
     studentProfile(user.id),
     inProgressSession(user.id),
     searchParams,
-    getTopics(),
-    getAllTopics(),
+    ownerIdFor(user).then(getTopics),
+    ownerIdFor(user).then(getAllTopics),
   ]);
   const parts = user.name.trim().split(/\s+/);
   const firstName = parts.length >= 3 ? parts.slice(-2).join(" ") : parts.at(-1);

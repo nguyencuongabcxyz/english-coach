@@ -5,7 +5,7 @@ import { inProgressSession, studentProfile } from "@/lib/data";
 import { Breadcrumb, btn, PageHeader, Pill } from "@/components/ui";
 import { Icon, ICON } from "@/components/icons";
 import { findSubtopic, getTopic } from "@/lib/topics";
-import { getTopics } from "@/lib/topics-db";
+import { getTopics, ownerIdFor } from "@/lib/topics-db";
 import { activityFor, SKILL_SHORT_VI, SKILL_VI } from "@/lib/skills";
 import { startActivity, startTopic } from "@/app/actions/practice";
 
@@ -15,7 +15,7 @@ export default async function PracticeIndex() {
   const user = await requireUser("student");
   const open = await inProgressSession(user.id);
   if (open) redirect(`/practice/${open.id}`);
-  const [profile, TOPICS] = await Promise.all([studentProfile(user.id), getTopics()]);
+  const [profile, TOPICS] = await Promise.all([studentProfile(user.id), ownerIdFor(user).then(getTopics)]);
   const latest = profile.latest;
   const topic = getTopic(TOPICS, latest?.topic_id ?? "") ?? TOPICS[0];
   const suggestion =

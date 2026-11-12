@@ -23,7 +23,7 @@ const STATUS: Record<StudentSummary["status"], { label: string; bg: string; fg: 
 
 export default async function TeacherHome() {
   const user = await requireUser("teacher");
-  const [o, cls, topics] = await Promise.all([classOverview(user.class_id!), getClass(user.class_id!), getTopics()]);
+  const [o, cls, topics] = await Promise.all([classOverview(user.class_id!), getClass(user.class_id!), getTopics(user.id)]);
   const weakest = o.skillAvg ? weakestSkill(o.skillAvg) : null;
   const firstName = user.name.split(" ").at(-1);
 

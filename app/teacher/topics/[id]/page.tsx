@@ -9,8 +9,8 @@ export const metadata = { title: "Sửa chủ đề · AI English Speaking Coach
 
 export default async function EditTopicPage({ params }: PageProps<"/teacher/topics/[id]">) {
   const { id } = await params;
-  await requireUser("teacher");
-  const topic = getTopic(await getAllTopics(), id);
+  const user = await requireUser("teacher");
+  const topic = getTopic(await getAllTopics(user.id), id);
   if (!topic) notFound();
   return (
     <>

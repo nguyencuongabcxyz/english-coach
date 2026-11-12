@@ -44,8 +44,12 @@ async function shellData(user: UserRow) {
 export async function AppShell({ user, children }: Props) {
   const { badges, className } = await shellData(user);
   const isTeacher = user.role === "teacher";
-  const items = (isTeacher ? TEACHER_NAV : STUDENT_NAV).map((i) => ({ ...i, badge: badges[i.key] }));
-  const role = isTeacher ? "Giáo viên Tiếng Anh" : `Học sinh · Lớp ${className}`;
+  const items = (isTeacher ? TEACHER_NAV : STUDENT_NAV)
+    .filter((i) => !i.adminOnly || user.is_admin)
+    .map((i) => ({ ...i, badge: badges[i.key] }));
+  const role = isTeacher
+    ? `${user.is_admin ? "Quản trị · " : ""}Giáo viên · Lớp ${className}`
+    : `Học sinh · Lớp ${className}`;
   const aiNote = isTeacher
     ? "Điểm AI chỉ để tham khảo. Thầy cô xác nhận hoặc điều chỉnh trước khi ghi nhận."
     : "Điểm AI là phản hồi tham khảo. Giáo viên là người đánh giá cuối cùng.";

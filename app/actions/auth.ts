@@ -35,12 +35,17 @@ export async function logout() {
 
 export async function activate(_: FormState, form: FormData): Promise<FormState> {
   const step = norm(form.get("step"));
-  const code = norm(form.get("code")).toUpperCase();
+  const code = norm(form.get("code"));
   const activation = norm(form.get("activation")).toUpperCase().replace(/\s+/g, "");
-  if (!code || !activation) return { error: "Vui lòng nhập mã học sinh và mã kích hoạt." };
-  const user = await one<UserRow>(`SELECT * FROM users WHERE upper(login) = $1 AND role = 'student'`, [code]);
+  if (!code || !activation) return { error: "Vui lòng nhập mã học sinh (hoặc email giáo viên) và mã kích hoạt." };
+  // Students activate with their student code, teachers with their school email.
+  const user = await one<UserRow>(`SELECT * FROM users WHERE upper(login) = upper($1)`, [code]);
   if (!user || !user.activation_code || user.activation_code.toUpperCase() !== activation) {
-    return { error: "Mã học sinh hoặc mã kích hoạt không đúng. Hãy hỏi giáo viên Tiếng Anh của bạn." };
+    return {
+      error: code.includes("@")
+        ? "Email hoặc mã kích hoạt không đúng. Hãy hỏi quản trị viên của trường."
+        : "Mã học sinh hoặc mã kích hoạt không đúng. Hãy hỏi giáo viên Tiếng Anh của bạn.",
+    };
   }
   if (step === "verify") return { ok: "verified" };
 
@@ -55,7 +60,7 @@ export async function activate(_: FormState, form: FormData): Promise<FormState>
     [user.id, hash],
   );
   await createSession(user);
-  redirect("/dashboard?welcome=1");
+  redirect(user.role === "teacher" ? "/teacher" : "/dashboard?welcome=1");
 }
 
 export async function requestReset(_: FormState, form: FormData): Promise<FormState> {

@@ -3,7 +3,7 @@ import { requireUser } from "@/lib/auth";
 import { getAnswers, getSession } from "@/lib/data";
 import { Breadcrumb } from "@/components/ui";
 import { getTopic } from "@/lib/topics";
-import { getAllTopics } from "@/lib/topics-db";
+import { getAllTopics, ownerIdFor } from "@/lib/topics-db";
 import { SKILL_VI } from "@/lib/skills";
 import { aiEnabled } from "@/lib/ai";
 import { PracticeClient } from "./PracticeClient";
@@ -17,7 +17,7 @@ export default async function PracticePage({ params }: PageProps<"/practice/[id]
   const session = await getSession(id);
   if (!session || session.student_id !== user.id) notFound();
   if (session.status === "completed") redirect(`/feedback/${session.id}`);
-  const [answers, topics] = await Promise.all([getAnswers(session.id), getAllTopics()]);
+  const [answers, topics] = await Promise.all([getAnswers(session.id), ownerIdFor(user).then(getAllTopics)]);
   const topic = getTopic(topics, session.topic_id);
   const focus = session.focus_skill ? SKILL_VI[session.focus_skill] : null;
 

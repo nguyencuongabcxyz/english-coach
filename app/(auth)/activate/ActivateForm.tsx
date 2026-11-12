@@ -60,7 +60,7 @@ export function ActivateForm() {
           </label>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="flex flex-col gap-2">
-              <span className="text-[13px] font-semibold">Mã học sinh</span>
+              <span className="text-[13px] font-semibold">Mã học sinh / Email giáo viên</span>
               <input
                 name="code"
                 required
@@ -96,7 +96,9 @@ export function ActivateForm() {
               value={fields.activation}
               onChange={(e) => setFields({ ...fields, activation: e.target.value })}
             />
-            <span className="text-xs text-muted">Chưa có mã? Hãy hỏi giáo viên Tiếng Anh của bạn.</span>
+            <span className="text-xs text-muted">
+              Chưa có mã? Học sinh hỏi giáo viên Tiếng Anh; giáo viên hỏi quản trị viên của trường.
+            </span>
           </label>
           <div className="flex gap-2.5 rounded-2xl bg-sand px-4 py-3 text-[13px] leading-normal text-sand-ink">
             <Icon d={ICON.mic} size={16} className="mt-0.5 shrink-0" />
@@ -106,7 +108,7 @@ export function ActivateForm() {
       ) : (
         <div key="password" className="flex flex-col gap-5">
           <p className="m-0 rounded-xl bg-good-bg px-3.5 py-2.5 text-[13px] font-medium text-good">
-            Đã xác minh mã học sinh {fields.code.toUpperCase()}. Hãy đặt mật khẩu của bạn.
+            Đã xác minh tài khoản {fields.code}. Hãy đặt mật khẩu của bạn.
           </p>
           <label className="flex flex-col gap-2">
             <span className="text-[13px] font-semibold">Mật khẩu mới</span>

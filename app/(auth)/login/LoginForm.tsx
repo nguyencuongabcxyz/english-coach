@@ -92,14 +92,12 @@ export function LoginForm() {
         <span className="rounded-full bg-chip px-2 py-0.5 text-[11px] text-muted">Sắp có</span>
       </button>
 
-      {isStudent && (
-        <p className="m-0 text-center text-[13px] text-muted">
-          Lần đầu sử dụng?{" "}
-          <Link href="/activate" className="font-semibold text-ink underline-offset-2 hover:underline">
-            Kích hoạt tài khoản
-          </Link>
-        </p>
-      )}
+      <p className="m-0 text-center text-[13px] text-muted">
+        Lần đầu sử dụng?{" "}
+        <Link href="/activate" className="font-semibold text-ink underline-offset-2 hover:underline">
+          Kích hoạt tài khoản
+        </Link>
+      </p>
     </form>
   );
 }

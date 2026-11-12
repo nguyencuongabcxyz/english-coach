@@ -26,6 +26,7 @@ export const ICON = {
   play: "M8 5v14l11-7z",
   refresh: "M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7",
   key: "M15 7a4 4 0 1 1-3.9 5H3v3h3v3h3v-3h2.1A4 4 0 0 1 15 7z",
+  users: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75",
 } as const;
 
 export function Icon({

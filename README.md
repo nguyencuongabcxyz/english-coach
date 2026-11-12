@@ -17,7 +17,9 @@ Web app luyện nói tiếng Anh cho học sinh THPT, viết theo tài liệu *P
 | 4. Phản hồi AI | `/feedback/[id]` – 5 tiêu chí, điểm mạnh, cần cải thiện, chú thích câu trả lời, gợi ý luyện tập |
 | 5. Luyện tập cá nhân hoá | Bài luyện tiếp theo theo kỹ năng yếu nhất (`lib/skills.ts`), nút "Luyện lại" |
 | 6. Theo dõi tiến bộ | Biểu đồ theo từng kỹ năng + bảng kết quả từng lần |
-| 7. Giáo viên | `/teacher` tổng quan lớp, `/teacher/review` duyệt & chỉnh điểm, xuất CSV, cấp mã kích hoạt |
+| 7. Giáo viên | `/teacher` tổng quan lớp, `/teacher/review` duyệt & chỉnh điểm, xuất CSV, thêm học sinh, cấp mã kích hoạt |
+| Chủ đề của giáo viên | `/teacher/topics` – mỗi giáo viên có bộ bài học riêng (bản sao của bộ mặc định), thêm/sửa/ẩn, AI gợi ý câu hỏi |
+| Quản trị | `/teacher/teachers` – chỉ giáo viên quản trị: thêm giáo viên + lớp phụ trách, cấp mã kích hoạt |
 
 Đăng nhập: `/login`, kích hoạt tài khoản: `/activate`, quên mật khẩu: `/forgot-password`.
 
@@ -31,7 +33,7 @@ npm run dev
 
 Lần chạy đầu tự tạo dữ liệu mẫu (xem `lib/seed.ts`):
 
-- Giáo viên: `ha.tran@thpt-demo.edu.vn` / `demo1234`
+- Giáo viên (quản trị): `ha.tran@thpt-demo.edu.vn` / `demo1234`
 - Học sinh: `HS-11A2-014` (Nguyễn Minh Anh) / `demo1234`
 - Học sinh chưa kích hoạt: `HS-11A2-022`, mã kích hoạt `QX7P2L`
 

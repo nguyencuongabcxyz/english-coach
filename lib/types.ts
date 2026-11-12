@@ -11,6 +11,7 @@ export type UserRow = {
   password_hash: string | null;
   activation_code: string | null;
   activated: boolean;
+  is_admin: boolean;
   reset_requested_at: string | null;
   last_active_at: string | null;
   created_at: string;

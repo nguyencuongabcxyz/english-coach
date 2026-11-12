@@ -5,7 +5,7 @@ import { one } from "@/lib/db";
 import { initials } from "@/components/AppShell";
 import { Breadcrumb, btn, EmptyState, PageHeader, shortDate } from "@/components/ui";
 import { getTopic } from "@/lib/topics";
-import { getAllTopics } from "@/lib/topics-db";
+import { getAllTopics, ownerIdFor } from "@/lib/topics-db";
 import { SKILL_SHORT_VI } from "@/lib/skills";
 import { finalScores } from "@/lib/types";
 import { ProgressCharts } from "./ProgressCharts";
@@ -17,7 +17,7 @@ export default async function ProgressPage() {
   const [p, cls, all] = await Promise.all([
     studentProfile(user.id),
     one<{ name: string; grade: number }>(`SELECT name, grade FROM classes WHERE id = $1`, [user.class_id]),
-    getAllTopics(),
+    ownerIdFor(user).then(getAllTopics),
   ]);
   const rows = p.sessions
     .filter((s) => finalScores(s))

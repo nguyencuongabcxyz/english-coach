@@ -17,7 +17,7 @@ export default async function StudentDetail({ params }: PageProps<"/teacher/stud
   const user = await requireUser("teacher");
   const student = await one<UserRow>(`SELECT * FROM users WHERE id = $1 AND class_id = $2 AND role = 'student'`, [id, user.class_id]);
   if (!student) notFound();
-  const [p, all] = await Promise.all([studentProfile(student.id), getAllTopics()]);
+  const [p, all] = await Promise.all([studentProfile(student.id), getAllTopics(user.id)]);
   const scored = p.sessions.filter((s) => finalScores(s));
   const max = 10;
 

@@ -116,8 +116,8 @@ export async function seed(q: QueryFn) {
   const teacherId = "t-ha";
   await q(`INSERT INTO classes (id, name, grade, teacher_id) VALUES ('c-11a2', '11A2', 11, $1)`, [teacherId]);
   await q(
-    `INSERT INTO users (id, role, login, name, class_id, password_hash, activated, last_active_at)
-     VALUES ($1, 'teacher', 'ha.tran@thpt-demo.edu.vn', 'Trần Thu Hà', 'c-11a2', $2, TRUE, now())`,
+    `INSERT INTO users (id, role, login, name, class_id, password_hash, activated, is_admin, last_active_at)
+     VALUES ($1, 'teacher', 'ha.tran@thpt-demo.edu.vn', 'Trần Thu Hà', 'c-11a2', $2, TRUE, TRUE, now())`,
     [teacherId, hash],
   );
 
@@ -213,18 +213,25 @@ export async function seed(q: QueryFn) {
   }
 }
 
-/** Copies the built-in topics into the database (runs once, when the topics table is empty). */
-export async function seedTopics(q: QueryFn) {
+/**
+ * Gives a teacher their own copy of the built-in lessons. The first copy keeps the plain ids
+ * (e.g. "family"); later copies get a suffix so every teacher can edit theirs independently.
+ */
+export async function copyDefaultTopics(q: QueryFn, ownerId: string) {
+  const free = async (table: "topics" | "subtopics", id: string) =>
+    (await q(`SELECT 1 FROM ${table} WHERE id = $1`, [id])).length === 0;
+  const tag = crypto.randomUUID().slice(0, 6);
   for (const [i, t] of DEFAULT_TOPICS.entries()) {
+    const topicId = (await free("topics", t.id)) ? t.id : `${t.id}-${tag}`;
     await q(
-      `INSERT INTO topics (id, sort, title, vi, theme) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (id) DO NOTHING`,
-      [t.id, i + 1, t.title, t.vi, defaultThemeOf(t.id)],
+      `INSERT INTO topics (id, sort, title, vi, theme, owner_id) VALUES ($1,$2,$3,$4,$5,$6)`,
+      [topicId, i + 1, t.title, t.vi, defaultThemeOf(t.id), ownerId],
     );
     for (const [j, s] of t.subtopics.entries()) {
+      const subId = (await free("subtopics", s.id)) ? s.id : `${s.id}-${tag}`;
       await q(
-        `INSERT INTO subtopics (id, topic_id, sort, name, questions, tips, vocab) VALUES ($1,$2,$3,$4,$5,$6,$7)
-         ON CONFLICT (id) DO NOTHING`,
-        [s.id, t.id, j + 1, s.name, JSON.stringify(s.questions), JSON.stringify(s.tips), JSON.stringify(s.vocab)],
+        `INSERT INTO subtopics (id, topic_id, sort, name, questions, tips, vocab) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+        [subId, topicId, j + 1, s.name, JSON.stringify(s.questions), JSON.stringify(s.tips), JSON.stringify(s.vocab)],
       );
     }
   }

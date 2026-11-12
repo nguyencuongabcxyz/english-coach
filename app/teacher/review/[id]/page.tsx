@@ -21,7 +21,7 @@ export default async function ReviewDetail({ params, searchParams }: PageProps<"
   if (!session || session.status !== "completed") notFound();
   const student = await one<UserRow>(`SELECT * FROM users WHERE id = $1 AND class_id = $2`, [session.student_id, user.class_id]);
   if (!student) notFound();
-  const [answers, topics] = await Promise.all([getAnswers(session.id), getAllTopics()]);
+  const [answers, topics] = await Promise.all([getAnswers(session.id), getAllTopics(user.id)]);
   const base = session.teacher_scores ?? session.scores!;
   const reviewed = session.teacher_status === "approved";
 

@@ -59,6 +59,7 @@ export async function saveTopicAction(payload: unknown): Promise<SaveTopicResult
   if (typeof input === "string") return { ok: false, error: input };
   try {
     const id = await saveTopic(input, teacher.id);
+    if (!id) return { ok: false, error: "Bạn không có quyền sửa chủ đề này." };
     refresh();
     return { ok: true, id };
   } catch (e) {
@@ -74,8 +75,8 @@ export async function toggleTopicHidden(id: string, hidden: boolean) {
 }
 
 export async function moveTopicAction(id: string, dir: -1 | 1) {
-  await requireUser("teacher");
-  await moveTopic(id, dir === -1 ? -1 : 1);
+  const teacher = await requireUser("teacher");
+  await moveTopic(id, dir === -1 ? -1 : 1, teacher.id);
   refresh();
 }
 

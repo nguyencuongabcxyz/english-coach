@@ -16,7 +16,7 @@ export default async function ReviewList({ searchParams }: PageProps<"/teacher/r
   const sp = await searchParams;
   const tab = sp.tab === "approved" ? "approved" : sp.tab === "all" ? "all" : "pending";
   const student = typeof sp.student === "string" ? sp.student : null;
-  const [all, topics] = await Promise.all([pendingReviews(user.class_id!), getAllTopics()]);
+  const [all, topics] = await Promise.all([pendingReviews(user.class_id!), getAllTopics(user.id)]);
   const scoped = student ? all.filter((s) => s.student_id === student) : all;
   const list = scoped.filter((s) => tab === "all" || s.teacher_status === tab);
   const count = (t: string) => scoped.filter((s) => t === "all" || s.teacher_status === t).length;

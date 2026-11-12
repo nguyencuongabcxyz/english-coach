@@ -8,8 +8,8 @@ import { moveTopicAction, toggleTopicHidden } from "@/app/actions/topics";
 export const metadata = { title: "Chủ đề luyện nói · AI English Speaking Coach" };
 
 export default async function TeacherTopicsPage({ searchParams }: PageProps<"/teacher/topics">) {
-  await requireUser("teacher");
-  const [topics, sp] = await Promise.all([getAllTopics(), searchParams]);
+  const user = await requireUser("teacher");
+  const [topics, sp] = await Promise.all([getAllTopics(user.id), searchParams]);
   const saved = typeof sp.saved === "string" ? topics.find((t) => t.id === sp.saved) : null;
 
   return (

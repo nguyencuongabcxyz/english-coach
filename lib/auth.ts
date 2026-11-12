@@ -57,6 +57,13 @@ export async function requireUser(role: Role): Promise<UserRow> {
   return user;
 }
 
+/** Teachers with the admin flag (can add teachers). */
+export async function requireAdmin(): Promise<UserRow> {
+  const user = await requireUser("teacher");
+  if (!user.is_admin) redirect("/teacher");
+  return user;
+}
+
 export async function touch(userId: string) {
   await sql(`UPDATE users SET last_active_at = now() WHERE id = $1`, [userId]);
 }

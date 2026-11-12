@@ -124,6 +124,10 @@ const SCHEMA = [
     hidden BOOLEAN NOT NULL DEFAULT FALSE
   )`,
   `CREATE INDEX IF NOT EXISTS idx_subtopics_topic ON subtopics(topic_id, sort)`,
+  // v3: admin teachers + per-teacher topics
+  `ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN NOT NULL DEFAULT FALSE`,
+  `ALTER TABLE topics ADD COLUMN IF NOT EXISTS owner_id TEXT`,
+  `CREATE INDEX IF NOT EXISTS idx_topics_owner ON topics(owner_id, sort)`,
 ];
 
 async function init() {
@@ -134,10 +138,25 @@ async function init() {
     const { seed } = await import("./seed");
     await seed(q);
   }
-  const [{ n: topicCount }] = await q(`SELECT count(*)::int AS n FROM topics`);
-  if (Number(topicCount) === 0) {
-    const { seedTopics } = await import("./seed");
-    await seedTopics(q);
+  // The first teacher becomes admin if there is none yet.
+  await q(
+    `UPDATE users SET is_admin = TRUE
+     WHERE id = (SELECT id FROM users WHERE role = 'teacher' ORDER BY created_at ASC, id ASC LIMIT 1)
+       AND NOT EXISTS (SELECT 1 FROM users WHERE is_admin)`,
+  );
+  // Topics created before per-teacher topics existed belong to that first teacher.
+  await q(
+    `UPDATE topics SET owner_id = (SELECT id FROM users WHERE role = 'teacher' ORDER BY created_at ASC, id ASC LIMIT 1)
+     WHERE owner_id IS NULL`,
+  );
+  // Every teacher gets their own copy of the default lessons.
+  const bare = await q(
+    `SELECT u.id FROM users u WHERE u.role = 'teacher'
+       AND NOT EXISTS (SELECT 1 FROM topics t WHERE t.owner_id = u.id)`,
+  );
+  if (bare.length) {
+    const { copyDefaultTopics } = await import("./seed");
+    for (const t of bare) await copyDefaultTopics(q, String(t.id));
   }
 }
 
