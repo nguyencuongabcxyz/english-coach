@@ -69,7 +69,7 @@ export default async function TeacherHome() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 px-5 py-5 sm:px-9 md:grid-cols-4 md:gap-3.5">
+      <div className="stagger grid grid-cols-2 gap-3 px-5 py-5 sm:px-9 md:grid-cols-4 md:gap-3.5">
         <Stat label="Hoạt động tuần này" value={String(o.activeThisWeek)} suffix={`/ ${o.totalStudents}`} />
         <Stat label="Lượt luyện tập" value={String(o.totalSessions)} />
         <Stat label="Điểm TB của lớp" value={fmt(o.classAvg)} suffix="/ 10" />
@@ -86,7 +86,7 @@ export default async function TeacherHome() {
               <Link
                 key={s.user.id}
                 href={`/teacher/students/${s.user.id}`}
-                className="flex items-center justify-between gap-3 rounded-2xl bg-white px-3.5 py-3 hover:shadow-md"
+                className="flex items-center justify-between gap-3 rounded-2xl bg-white px-3.5 py-3 transition-[box-shadow,translate] duration-200 hover:-translate-y-0.5 hover:shadow-md"
               >
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate text-sm font-semibold">{s.user.name}</span>
@@ -171,7 +171,7 @@ export default async function TeacherHome() {
         </section>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 px-5 pb-6 sm:px-9 lg:grid-cols-2 xl:grid-cols-3">
+      <div className="stagger grid grid-cols-1 gap-4 px-5 pb-6 sm:px-9 lg:grid-cols-2 xl:grid-cols-3">
         <section className="flex min-w-0 flex-col gap-3 rounded-[22px] border border-line p-5">
           <h3 className="m-0 text-[15px] font-bold">Tiến bộ theo kỹ năng</h3>
           <p className="m-0 text-[13px] text-muted">
@@ -209,7 +209,7 @@ export default async function TeacherHome() {
                 <Link
                   key={s.user.id}
                   href={`/teacher/students/${s.user.id}`}
-                  className="flex items-center justify-between gap-3 rounded-xl bg-soft px-3 py-2 text-sm hover:bg-line"
+                  className="flex items-center justify-between gap-3 rounded-xl bg-soft px-3 py-2 text-sm transition-colors hover:bg-line"
                 >
                   <span className="truncate font-semibold">{s.user.name}</span>
                   <span className="flex shrink-0 items-center gap-2 text-xs text-muted">
@@ -271,7 +271,7 @@ function Stat({ label, value, suffix, href }: { label: string; value: string; su
   );
   const cls = "flex flex-col gap-1.5 rounded-[18px] border border-line p-4 sm:p-[18px]";
   return href ? (
-    <Link href={href} className={`${cls} hover:border-line-strong`}>
+    <Link href={href} className={`${cls} transition-[border-color,box-shadow,translate] duration-200 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-sm`}>
       {inner}
     </Link>
   ) : (

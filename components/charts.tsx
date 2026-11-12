@@ -151,7 +151,7 @@ export function ScoreLineChart({
         {reference && (
           <path d={path(reference.values)} fill="none" stroke={CONTEXT} strokeWidth="2" strokeDasharray="5 4" strokeLinecap="round" strokeLinejoin="round" />
         )}
-        <path d={path(series.values)} fill="none" stroke={ACCENT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <path className="draw-line" pathLength={1} d={path(series.values)} fill="none" stroke={ACCENT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         {series.values.map((v, i) =>
           v == null ? null : (
             <circle key={i} cx={x(i)} cy={y(v)} r={hover === i || i === lastIdx ? 5 : 3.5} fill={ACCENT} stroke="#fff" strokeWidth="2" />
@@ -206,7 +206,7 @@ export function CountColumns({
                 <span className="text-[11px] font-bold text-ink tabular-nums">{d.value}</span>
               )}
               <span
-                className="w-full max-w-6 rounded-t transition-opacity"
+                className="grow-y w-full max-w-6 rounded-t transition-opacity"
                 style={{
                   height: Math.max(d.value > 0 ? 3 : 0, h),
                   background: last ? ACCENT : ACCENT_SOFT,
@@ -347,7 +347,7 @@ export function BulletRows({
         >
           <span className="text-sm">{r.label}</span>
           <div className="relative h-3 rounded-full bg-shell">
-            {r.value != null && <div className="h-3 rounded-full" style={{ width: `${r.value * 10}%`, background: r.color }} />}
+            {r.value != null && <div className="grow-x h-3 rounded-full" style={{ width: `${r.value * 10}%`, background: r.color }} />}
             {r.ref != null && <span className="absolute -top-1 h-5 w-0.5 bg-ink" style={{ left: `${r.ref * 10}%` }} />}
           </div>
           <span className="text-right text-sm tabular-nums">
@@ -421,7 +421,7 @@ export function SegmentedBar({
             <div
               key={p.label}
               title={`${p.label}: ${p.value} (${Math.round(share * 100)}%)`}
-              className="flex h-full items-center overflow-hidden rounded px-2 text-xs font-bold"
+              className="grow-x flex h-full items-center overflow-hidden rounded px-2 text-xs font-bold"
               style={{ width: `${share * 100}%`, background: p.color, color: p.text }}
             >
               {share >= 0.12 ? p.value : ""}
@@ -451,7 +451,7 @@ export function RankedBars({ rows, unit }: { rows: { label: string; value: numbe
         <div key={r.label} className="grid grid-cols-[minmax(90px,140px)_1fr] items-center gap-3" title={`${r.label}: ${r.value} ${unit}`}>
           <span className="truncate text-sm">{r.label}</span>
           <div className="flex items-center gap-2">
-            <div className="h-3.5 rounded-r" style={{ width: `${(r.value / max) * 85}%`, minWidth: r.value ? 4 : 0, background: ACCENT }} />
+            <div className="grow-x h-3.5 rounded-r" style={{ width: `${(r.value / max) * 85}%`, minWidth: r.value ? 4 : 0, background: ACCENT }} />
             <span className="text-xs whitespace-nowrap text-muted tabular-nums">
               <strong className="text-ink">{r.value}</strong> {unit}
               {r.sub ? ` · ${r.sub}` : ""}

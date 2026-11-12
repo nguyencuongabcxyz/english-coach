@@ -49,7 +49,7 @@ export function TopicsBrowser({ topics }: { topics: T[] }) {
                 role="tab"
                 aria-selected={on}
                 onClick={() => setFilter(f.id)}
-                className={`min-h-10 shrink-0 cursor-pointer rounded-full px-5 text-[13px] ${
+                className={`press min-h-10 shrink-0 cursor-pointer rounded-full px-5 text-[13px] ${
                   on ? "bg-brand font-semibold text-white" : "bg-chip font-medium text-ink hover:bg-line"
                 }`}
               >
@@ -71,7 +71,7 @@ export function TopicsBrowser({ topics }: { topics: T[] }) {
         </label>
       </div>
 
-      <div className="grid grid-cols-1 gap-[18px] px-5 pt-6 pb-8 sm:px-9 md:grid-cols-2 xl:grid-cols-3">
+      <div className="stagger grid grid-cols-1 gap-[18px] px-5 pt-6 pb-8 sm:px-9 md:grid-cols-2 xl:grid-cols-3">
         {shown.map((t) => (
           <section key={t.id} className="flex flex-col overflow-hidden rounded-[22px]" style={{ background: t.bg }}>
             <div className="flex flex-col gap-2.5 p-3.5">
@@ -92,7 +92,7 @@ export function TopicsBrowser({ topics }: { topics: T[] }) {
                     setPendingId(s.id);
                     start(() => startTopic(s.id));
                   }}
-                  className="flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-[14px] bg-white px-3.5 py-3 text-left transition-shadow hover:shadow-md disabled:cursor-wait"
+                  className="flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-[14px] bg-white px-3.5 py-3 text-left transition-[box-shadow,translate] duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 disabled:cursor-wait"
                 >
                   <span className="flex size-[34px] shrink-0 items-center justify-center rounded-[10px] bg-soft">
                     {pendingId === s.id ? (

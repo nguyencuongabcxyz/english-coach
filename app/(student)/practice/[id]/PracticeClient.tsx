@@ -329,7 +329,7 @@ export function PracticeClient({ session, initialAnswers, initials, demo }: Prop
                 <button
                   onClick={startRecording}
                   aria-label="Bắt đầu nói"
-                  className="flex size-24 cursor-pointer items-center justify-center rounded-full bg-brand text-white transition-transform hover:scale-105"
+                  className="flex size-24 cursor-pointer items-center justify-center rounded-full bg-brand text-white transition-transform duration-200 ease-spring hover:scale-105 active:scale-95"
                 >
                   <Icon d={ICON.mic} size={36} />
                 </button>

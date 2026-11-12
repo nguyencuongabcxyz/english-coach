@@ -82,7 +82,7 @@ export default async function Dashboard({ searchParams }: PageProps<"/dashboard"
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 gap-3 px-5 py-5 sm:px-9 md:grid-cols-[repeat(auto-fit,minmax(180px,1fr))] md:gap-3.5">
+      <div className="stagger grid grid-cols-2 gap-3 px-5 py-5 sm:px-9 md:grid-cols-[repeat(auto-fit,minmax(180px,1fr))] md:gap-3.5">
         <Stat label="Số lần luyện tập" value={String(profile.count)} note={`+${profile.weekCount} trong tuần này`} tone="good" />
         <Stat
           label="Chủ đề đã luyện"
@@ -207,7 +207,7 @@ export default async function Dashboard({ searchParams }: PageProps<"/dashboard"
           Xem tất cả
         </Link>
       </div>
-      <div className="grid grid-cols-1 gap-3.5 px-5 pb-6 sm:grid-cols-2 sm:px-9 xl:grid-cols-3">
+      <div className="stagger grid grid-cols-1 gap-3.5 px-5 pb-6 sm:grid-cols-2 sm:px-9 xl:grid-cols-3">
         {recent.length === 0 && <p className="m-0 text-sm text-muted">Chưa có buổi luyện nào.</p>}
         {recent.map((s) => {
           const c = topicColors(ALL, s.topic_id);
@@ -217,7 +217,7 @@ export default async function Dashboard({ searchParams }: PageProps<"/dashboard"
             <Link
               key={s.id}
               href={`/feedback/${s.id}`}
-              className="flex flex-col overflow-hidden rounded-[18px] transition-transform hover:-translate-y-0.5"
+              className="press flex flex-col overflow-hidden rounded-[18px] hover:-translate-y-1 hover:shadow-[0_10px_24px_-12px_rgba(22,21,26,0.25)] active:translate-y-0"
               style={{ background: c.bg }}
             >
               <div className="flex flex-col gap-2.5 p-3">

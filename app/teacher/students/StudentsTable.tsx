@@ -119,7 +119,7 @@ export function StudentsTable({ rows }: { rows: StudentRow[] }) {
                 role="tab"
                 aria-selected={on}
                 onClick={() => setFilter(f.key)}
-                className={`inline-flex min-h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-3.5 text-[13px] ${
+                className={`press inline-flex min-h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-3.5 text-[13px] ${
                   on ? "bg-brand font-semibold text-white" : "bg-chip font-medium hover:bg-line"
                 }`}
               >

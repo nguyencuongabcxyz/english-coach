@@ -16,7 +16,7 @@ export function Breadcrumb({
           return (
             <span key={i} className="flex items-center gap-2">
               {it.href && !last ? (
-                <Link href={it.href} className="text-muted hover:text-ink">
+                <Link href={it.href} className="text-muted transition-colors hover:text-ink">
                   {it.label}
                 </Link>
               ) : (
@@ -91,11 +91,11 @@ export function LevelChip({ value, className = "" }: { value: number; className?
 }
 
 export const btn = {
-  dark: "inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-full bg-brand px-5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50",
+  dark: "press inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-full bg-brand px-5 text-sm font-semibold text-white hover:bg-brand-dark hover:shadow-[0_4px_14px_-4px_rgba(79,85,216,0.55)] disabled:cursor-not-allowed disabled:opacity-50",
   light:
-    "inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-full border border-line-strong bg-white px-5 text-sm font-semibold text-ink transition-colors hover:bg-soft disabled:cursor-not-allowed disabled:opacity-50",
+    "press inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-full border border-line-strong bg-white px-5 text-sm font-semibold text-ink hover:bg-soft disabled:cursor-not-allowed disabled:opacity-50",
   white:
-    "inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-full bg-white px-[18px] text-sm font-semibold text-ink hover:bg-soft",
+    "press inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-full bg-white px-[18px] text-sm font-semibold text-ink hover:bg-soft",
   link: "text-[13px] font-semibold text-link hover:underline",
 };
 

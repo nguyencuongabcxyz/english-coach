@@ -43,7 +43,7 @@ export default async function ReviewList({ searchParams }: PageProps<"/teacher/r
           <Link
             key={k}
             href={qs(k)}
-            className={`inline-flex min-h-10 items-center gap-2 rounded-full px-4 text-[13px] ${
+            className={`press inline-flex min-h-10 items-center gap-2 rounded-full px-4 text-[13px] ${
               tab === k ? "bg-brand font-semibold text-white" : "bg-chip font-medium"
             }`}
           >
@@ -64,7 +64,7 @@ export default async function ReviewList({ searchParams }: PageProps<"/teacher/r
             <li key={s.id}>
               <Link
                 href={`/teacher/review/${s.id}`}
-                className="flex flex-wrap items-center gap-3 rounded-2xl border border-line px-4 py-3 hover:border-line-strong hover:shadow-sm sm:flex-nowrap"
+                className="flex flex-wrap items-center gap-3 rounded-2xl border border-line px-4 py-3 transition-[border-color,box-shadow] duration-200 hover:border-line-strong hover:shadow-sm sm:flex-nowrap"
               >
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-full text-xs font-bold" style={{ background: t?.bg }}>
                   {initials(s.student_name)}

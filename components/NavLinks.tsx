@@ -41,14 +41,14 @@ export function SidebarLinks({ items }: { items: NavItem[] }) {
             onClick={(e) => {
               if (stay(item)) e.preventDefault();
             }}
-            className={`flex min-h-11 items-center gap-3 rounded-full px-3.5 text-sm transition-colors ${
+            className={`press flex min-h-11 items-center gap-3 rounded-full px-3.5 text-sm ${
               on ? "bg-white font-bold shadow-[0_1px_2px_rgba(22,21,26,0.08)]" : "font-medium hover:bg-white/60"
             }`}
           >
             <Icon d={item.d} />
             <span className="flex-1">{item.label}</span>
             {item.badge && !on && (
-              <span className="rounded-full bg-brand px-2 py-0.5 text-[11px] font-bold text-white">{item.badge}</span>
+              <span className="pop-in rounded-full bg-brand px-2 py-0.5 text-[11px] font-bold text-white">{item.badge}</span>
             )}
           </Link>
         );

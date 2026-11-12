@@ -30,7 +30,7 @@ export default async function PracticeIndex() {
     <>
       <Breadcrumb items={[{ label: "Trang chủ", href: "/dashboard" }, { label: "Luyện nói với AI" }]} />
       <PageHeader title="Luyện nói với AI" subtitle="Chọn một bài luyện để bắt đầu. AI sẽ hỏi, bạn trả lời bằng giọng nói." />
-      <div className="grid grid-cols-1 gap-4 px-5 pt-6 pb-8 sm:px-9 md:grid-cols-3">
+      <div className="stagger grid grid-cols-1 gap-4 px-5 pt-6 pb-8 sm:px-9 md:grid-cols-3">
         {suggestion && (
           <Card
             bg="#CDD0F8"

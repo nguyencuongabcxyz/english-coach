@@ -30,7 +30,7 @@ export default async function TeacherTopicsPage({ searchParams }: PageProps<"/te
         </p>
       )}
 
-      <div className="grid grid-cols-1 gap-[18px] px-5 pt-6 pb-10 sm:px-9 md:grid-cols-2 xl:grid-cols-3">
+      <div className="stagger grid grid-cols-1 gap-[18px] px-5 pt-6 pb-10 sm:px-9 md:grid-cols-2 xl:grid-cols-3">
         {topics.map((t, i) => {
           const visibleSubs = t.subtopics.filter((s) => !s.hidden);
           const questions = visibleSubs.reduce((a, s) => a + s.questions.length, 0);
