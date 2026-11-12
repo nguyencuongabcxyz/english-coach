@@ -44,7 +44,7 @@ export default async function ReviewList({ searchParams }: PageProps<"/teacher/r
             key={k}
             href={qs(k)}
             className={`inline-flex min-h-10 items-center gap-2 rounded-full px-4 text-[13px] ${
-              tab === k ? "bg-ink font-semibold text-white" : "bg-chip font-medium"
+              tab === k ? "bg-brand font-semibold text-white" : "bg-chip font-medium"
             }`}
           >
             {l} <span className="opacity-70">{count(k)}</span>

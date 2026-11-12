@@ -121,7 +121,7 @@ export async function AppShell({ user, children }: Props) {
 export function Brand({ portal }: { portal: string }) {
   return (
     <div className="flex items-center gap-2.5 px-2">
-      <div className="flex size-10 items-center justify-center rounded-xl bg-ink">
+      <div className="flex size-10 items-center justify-center rounded-xl bg-brand">
         <Icon d={ICON.logo} size={20} stroke="#fff" width={2.2} />
       </div>
       <div className="flex flex-col">

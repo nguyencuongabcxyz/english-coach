@@ -5,6 +5,8 @@
   --font-sans: var(--font-jakarta), system-ui, sans-serif;
 
   --color-ink: #16151a;
+  --color-brand: #4f55d8;
+  --color-brand-dark: #4349c9;
   --color-muted: #5e5c68;
   --color-canvas: #e4e2ea;
   --color-shell: #f1eff6;

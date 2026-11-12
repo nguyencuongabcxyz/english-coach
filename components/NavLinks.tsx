@@ -48,7 +48,7 @@ export function SidebarLinks({ items }: { items: NavItem[] }) {
             <Icon d={item.d} />
             <span className="flex-1">{item.label}</span>
             {item.badge && !on && (
-              <span className="rounded-full bg-ink px-2 py-0.5 text-[11px] font-bold text-white">{item.badge}</span>
+              <span className="rounded-full bg-brand px-2 py-0.5 text-[11px] font-bold text-white">{item.badge}</span>
             )}
           </Link>
         );

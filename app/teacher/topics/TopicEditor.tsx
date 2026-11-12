@@ -20,9 +20,9 @@ type SubDraft = {
 };
 
 const input =
-  "min-h-11 w-full rounded-xl border border-line-strong bg-white px-3.5 text-sm outline-none placeholder:text-[#A9A7B3] focus:border-ink";
+  "min-h-11 w-full rounded-xl border border-line-strong bg-white px-3.5 text-sm outline-none placeholder:text-[#A9A7B3] focus:border-brand";
 const area =
-  "w-full rounded-xl border border-line-strong bg-white px-3.5 py-2.5 text-sm leading-relaxed outline-none placeholder:text-[#A9A7B3] focus:border-ink";
+  "w-full rounded-xl border border-line-strong bg-white px-3.5 py-2.5 text-sm leading-relaxed outline-none placeholder:text-[#A9A7B3] focus:border-brand";
 
 let counter = 0;
 const newKey = () => `k${++counter}-${Date.now()}`;

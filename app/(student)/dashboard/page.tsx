@@ -256,7 +256,7 @@ export default async function Dashboard({ searchParams }: PageProps<"/dashboard"
           {CYCLE.map((label, i) => (
             <li key={label} className="flex items-center gap-2">
               <span className="inline-flex items-center gap-2 rounded-full bg-soft px-3.5 py-2 text-[13px] font-semibold">
-                <span className="inline-flex size-5 items-center justify-center rounded-full bg-ink text-[11px] text-white">{i + 1}</span>
+                <span className="inline-flex size-5 items-center justify-center rounded-full bg-brand text-[11px] text-white">{i + 1}</span>
                 {label}
               </span>
               {i < CYCLE.length - 1 && (

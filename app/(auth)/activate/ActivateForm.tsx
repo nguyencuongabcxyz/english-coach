@@ -30,7 +30,7 @@ export function ActivateForm() {
       <ol className="grid grid-cols-3 gap-2">
         {STEPS.map((s, i) => (
           <li key={s} className="flex flex-col gap-1.5">
-            <span className={`h-1.5 rounded-full ${i <= step ? "bg-ink" : "bg-canvas"}`} />
+            <span className={`h-1.5 rounded-full ${i <= step ? "bg-brand" : "bg-canvas"}`} />
             <span className={`text-[11px] ${i === step ? "font-semibold text-ink" : "text-muted"}`}>
               {i + 1} · {s}
             </span>

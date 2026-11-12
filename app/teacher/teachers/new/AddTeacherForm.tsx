@@ -7,7 +7,7 @@ import { Icon, ICON } from "@/components/icons";
 import { btn } from "@/components/ui";
 
 const inputCls =
-  "min-h-12 w-full rounded-2xl border border-line-strong bg-white px-4 text-[15px] outline-none placeholder:text-[#A9A7B3] focus:border-ink aria-[invalid=true]:border-bad";
+  "min-h-12 w-full rounded-2xl border border-line-strong bg-white px-4 text-[15px] outline-none placeholder:text-[#A9A7B3] focus:border-brand aria-[invalid=true]:border-bad";
 
 const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const randomCode = () =>

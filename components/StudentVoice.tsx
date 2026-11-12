@@ -154,7 +154,7 @@ export function StudentVoice({
           type="button"
           onClick={() => play(0, total || 9999, "all")}
           aria-label={playing === "all" ? "Dừng" : "Nghe cả bài nói"}
-          className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full bg-ink text-white hover:opacity-90"
+          className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full bg-brand text-white hover:opacity-90"
         >
           {status === "loading" ? (
             <span className="spin size-4 rounded-full border-2 border-white border-t-transparent" />
@@ -170,7 +170,7 @@ export function StudentVoice({
           </span>
           <div className="h-1.5 overflow-hidden rounded-full bg-white">
             <div
-              className="h-1.5 rounded-full bg-ink transition-[width] duration-100"
+              className="h-1.5 rounded-full bg-brand transition-[width] duration-100"
               style={{ width: total ? `${Math.min(100, (pos / total) * 100)}%` : "0%" }}
             />
           </div>
@@ -189,7 +189,7 @@ export function StudentVoice({
                 stop();
               }}
               className={`min-h-8 cursor-pointer rounded-full px-2.5 text-xs font-semibold ${
-                rate === r ? "bg-ink text-white" : "text-ink"
+                rate === r ? "bg-brand text-white" : "text-ink"
               }`}
             >
               {r === 1 ? "1×" : "0.75×"}
@@ -208,7 +208,7 @@ export function StudentVoice({
                   type="button"
                   onClick={() => play(seg.from, seg.to, i)}
                   className={`flex w-full cursor-pointer items-start gap-2.5 rounded-xl px-3 py-2 text-left text-sm transition-colors ${
-                    on ? "bg-ink text-white" : "bg-white hover:bg-soft"
+                    on ? "bg-brand text-white" : "bg-white hover:bg-soft"
                   }`}
                 >
                   <span

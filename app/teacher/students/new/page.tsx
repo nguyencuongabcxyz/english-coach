@@ -12,7 +12,7 @@ export default async function NewStudentPage() {
 
   return (
     <>
-      <Breadcrumb items={[{ label: "Tổng quan lớp", href: "/teacher" }, { label: "Thêm học sinh" }]} />
+      <Breadcrumb items={[{ label: "Học sinh", href: "/teacher/students" }, { label: "Thêm học sinh" }]} />
       <PageHeader
         title="Thêm học sinh"
         subtitle={`Tạo tài khoản cho học sinh lớp ${cls?.name ?? ""}. Học sinh dùng mã học sinh và mã kích hoạt để tự đặt mật khẩu.`}

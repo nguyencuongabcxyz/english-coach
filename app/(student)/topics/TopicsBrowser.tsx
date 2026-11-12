@@ -50,7 +50,7 @@ export function TopicsBrowser({ topics }: { topics: T[] }) {
                 aria-selected={on}
                 onClick={() => setFilter(f.id)}
                 className={`min-h-10 shrink-0 cursor-pointer rounded-full px-5 text-[13px] ${
-                  on ? "bg-ink font-semibold text-white" : "bg-chip font-medium text-ink hover:bg-line"
+                  on ? "bg-brand font-semibold text-white" : "bg-chip font-medium text-ink hover:bg-line"
                 }`}
               >
                 {f.label}

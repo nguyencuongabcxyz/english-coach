@@ -62,7 +62,7 @@ export function ProgressCharts({
                   aria-selected={k === metric}
                   onClick={() => setMetric(k)}
                   className={`min-h-9 shrink-0 cursor-pointer rounded-full px-3.5 text-xs ${
-                    k === metric ? "bg-ink font-semibold text-white" : "bg-chip font-medium hover:bg-line"
+                    k === metric ? "bg-brand font-semibold text-white" : "bg-chip font-medium hover:bg-line"
                   }`}
                 >
                   {l}
@@ -93,7 +93,7 @@ export function ProgressCharts({
                   <span className="text-[12px] font-bold sm:text-[13px]">{f(r[metric])}</span>
                   <div
                     className="w-full max-w-[72px] rounded-t-[10px] transition-[height] duration-300"
-                    style={{ height: `${(r[metric] / 10) * (H - 24)}px`, background: i === chartRows.length - 1 ? "#16151A" : "#B9BDEF" }}
+                    style={{ height: `${(r[metric] / 10) * (H - 24)}px`, background: i === chartRows.length - 1 ? "#4F55D8" : "#B9BDEF" }}
                   />
                 </div>
               ))}

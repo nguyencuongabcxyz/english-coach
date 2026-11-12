@@ -98,7 +98,7 @@ export default async function TeacherTopicsPage({ searchParams }: PageProps<"/te
                 </form>
                 <Link
                   href={`/teacher/topics/${t.id}`}
-                  className="inline-flex min-h-9 items-center rounded-full bg-ink px-3.5 text-xs font-semibold text-white"
+                  className="inline-flex min-h-9 items-center rounded-full bg-brand px-3.5 text-xs font-semibold text-white"
                 >
                   Sửa
                 </Link>

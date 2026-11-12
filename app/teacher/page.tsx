@@ -1,35 +1,20 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { classOverview, getClass } from "@/lib/data";
-import { initials } from "@/components/AppShell";
 import { Breadcrumb, btn } from "@/components/ui";
 import { Icon, ICON } from "@/components/icons";
 import { fmt, level, SKILL_SHORT_VI, SKILL_VI, SKILLS, weakestSkill } from "@/lib/skills";
-import { getAllTopics, getTopics } from "@/lib/topics-db";
+import { getAllTopics } from "@/lib/topics-db";
 import { getTopic } from "@/lib/topics";
-import { finalScores } from "@/lib/types";
-import { CountColumns, Dumbbell, RankedBars, ScoreLineChart, SegmentedBar, Sparkline, TableView } from "@/components/charts";
-import { issueActivationCode } from "@/app/actions/teacher";
-import type { StudentSummary } from "@/lib/data";
+import { CountColumns, Dumbbell, RankedBars, ScoreLineChart, SegmentedBar, TableView } from "@/components/charts";
 
 export const metadata = { title: "Tổng quan lớp · AI English Speaking Coach" };
 
-const AVATAR = ["#CDD0F8", "#C8F2DD", "#FBE5BC", "#F6CBBF", "#CDE6F7"];
-
-const STATUS: Record<StudentSummary["status"], { label: string; bg: string; fg: string }> = {
-  progress: { label: "Đang tiến bộ", bg: "#EEEFFD", fg: "#3A3BA8" },
-  stable: { label: "Ổn định", bg: "#D9F5E6", fg: "#11663F" },
-  support: { label: "Cần hỗ trợ", bg: "#FBD9D2", fg: "#9B2C1A" },
-  inactive: { label: "Không hoạt động", bg: "#F3F2F7", fg: "#5E5C68" },
-  new: { label: "Chưa luyện", bg: "#F3F2F7", fg: "#5E5C68" },
-};
-
 export default async function TeacherHome() {
   const user = await requireUser("teacher");
-  const [o, cls, topics, allTopics] = await Promise.all([
+  const [o, cls, allTopics] = await Promise.all([
     classOverview(user.class_id!),
     getClass(user.class_id!),
-    getTopics(user.id),
     getAllTopics(user.id),
   ]);
   const weeksWithData = o.weekly.filter((w) => w.avg != null);
@@ -255,113 +240,23 @@ export default async function TeacherHome() {
         </section>
       </div>
 
-      <section className="mx-5 mb-8 overflow-hidden rounded-[22px] border border-line sm:mx-9">
-        <div className="flex flex-wrap items-center justify-between gap-2 px-5 py-4">
-          <h2 className="m-0 text-[17px] font-bold">Danh sách học sinh</h2>
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-muted">{o.totalStudents} học sinh</span>
-            <Link href="/teacher/students/new" className={btn.link}>
-              + Thêm học sinh
-            </Link>
-          </div>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[980px] border-collapse text-sm">
-            <thead>
-              <tr className="bg-soft text-left">
-                {["Học sinh", "Lượt luyện", "Chủ đề", "Điểm TB", "Xu hướng", "Kỹ năng yếu", "Tiến bộ", "Trạng thái", ""].map((h, i) => (
-                  <th key={i} scope="col" className={`py-3 text-xs font-semibold text-muted ${i === 0 ? "px-5" : "px-3"}`}>
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {o.summaries.map((s, i) => {
-                const st = STATUS[s.status];
-                const w = s.profile.weakest;
-                return (
-                  <tr key={s.user.id} className="border-t border-line">
-                    <th scope="row" className="px-5 py-3 text-left font-normal">
-                      <Link href={`/teacher/students/${s.user.id}`} className="flex items-center gap-2.5 hover:underline">
-                        <span
-                          className="flex size-8 shrink-0 items-center justify-center rounded-full text-[11px] font-bold"
-                          style={{ background: AVATAR[i % AVATAR.length] }}
-                        >
-                          {initials(s.user.name)}
-                        </span>
-                        <span className="flex flex-col">
-                          <span className="font-semibold">{s.user.name}</span>
-                          <span className="text-xs text-muted">{s.user.login}</span>
-                        </span>
-                      </Link>
-                    </th>
-                    <td className="px-3 py-3">{s.profile.count}</td>
-                    <td className="px-3 py-3">
-                      {s.profile.topicsDone.filter((id) => topics.some((t) => t.id === id)).length}/{topics.length}
-                    </td>
-                    <td className="px-3 py-3 font-bold">{fmt(s.avg?.total)}</td>
-                    <td className="px-3 py-3">
-                      <Sparkline
-                        values={s.profile.sessions
-                          .slice(-8)
-                          .map((x) => finalScores(x)?.total)
-                          .filter((v): v is number => v != null)}
-                        label={`Xu hướng điểm của ${s.user.name}`}
-                      />
-                    </td>
-                    <td className="px-3 py-3">{w ? SKILL_SHORT_VI[w] : "–"}</td>
-                    <td className={`px-3 py-3 font-semibold ${s.trend == null ? "text-muted" : s.trend > 0 ? "text-good" : s.trend < 0 ? "text-bad" : "text-muted"}`}>
-                      {s.trend == null ? "–" : `${s.trend > 0 ? "+" : s.trend === 0 ? "±" : ""}${s.trend.toFixed(1)}`}
-                    </td>
-                    <td className="px-3 py-3">
-                      <span className="rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap" style={{ background: st.bg, color: st.fg }}>
-                        {st.label}
-                      </span>
-                      {!s.user.activated && s.user.activation_code && (
-                        <span className="mt-1 block text-[11px] text-muted">
-                          Mã kích hoạt: <strong className="font-mono text-ink">{s.user.activation_code}</strong>
-                        </span>
-                      )}
-                      {s.user.reset_requested_at && (
-                        <span className="mt-1 block text-[11px] font-semibold text-bad">Yêu cầu đặt lại mật khẩu</span>
-                      )}
-                      {s.user.activated && s.user.activation_code && (
-                        <span className="mt-1 block text-[11px] text-muted">
-                          Mã đặt lại: <strong className="font-mono text-ink">{s.user.activation_code}</strong>
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-3 py-3 text-right whitespace-nowrap">
-                      {s.pending > 0 ? (
-                        <Link
-                          href={`/teacher/review?student=${s.user.id}`}
-                          className="inline-flex min-h-9 items-center rounded-full bg-ink px-3.5 text-xs font-semibold text-white"
-                        >
-                          Duyệt ({s.pending})
-                        </Link>
-                      ) : !s.user.activated || s.user.reset_requested_at ? (
-                        <form action={issueActivationCode.bind(null, s.user.id)}>
-                          <button className="inline-flex min-h-9 cursor-pointer items-center rounded-full border border-line-strong px-3.5 text-xs font-semibold hover:bg-soft">
-                            {s.user.activated ? "Cấp mã đặt lại" : "Cấp mã mới"}
-                          </button>
-                        </form>
-                      ) : (
-                        <Link
-                          href={`/teacher/students/${s.user.id}`}
-                          className="inline-flex min-h-9 items-center rounded-full border border-line-strong px-3.5 text-xs font-semibold hover:bg-soft"
-                        >
-                          Xem
-                        </Link>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </section>
+      <Link
+        href="/teacher/students"
+        className="mx-5 mb-8 flex flex-wrap items-center gap-4 rounded-[22px] border border-line p-5 transition-colors hover:border-brand sm:mx-9"
+      >
+        <span className="flex size-11 items-center justify-center rounded-2xl bg-lilac-soft text-brand">
+          <Icon d={ICON.school} size={20} />
+        </span>
+        <span className="flex min-w-0 flex-1 flex-col">
+          <span className="text-[15px] font-bold">Danh sách học sinh</span>
+          <span className="text-[13px] text-muted">
+            {o.totalStudents} học sinh · {o.needSupport.length} cần hỗ trợ · tìm kiếm, lọc theo trạng thái, xem hồ sơ từng em
+          </span>
+        </span>
+        <span className="inline-flex items-center gap-1 text-sm font-semibold text-brand">
+          Mở danh sách <Icon d={ICON.chevronRight} size={16} width={2} />
+        </span>
+      </Link>
     </>
   );
 }

@@ -30,8 +30,8 @@ export function LoginIllustration() {
         {/* sparkles */}
         {[
           [560, 175, 10, "#4F55D8"],
-          [70, 190, 8, "#16151A"],
-          [395, 30, 7, "#16151A"],
+          [70, 190, 8, "#2E2F5C"],
+          [395, 30, 7, "#2E2F5C"],
           [210, 470, 9, "#4F55D8"],
         ].map(([x, y, r, c], i) => (
           <path
@@ -43,7 +43,7 @@ export function LoginIllustration() {
       </svg>
 
       {/* Phone */}
-      <div className="li-float-a absolute top-[6%] left-[31%] w-[38%] rounded-[30px] bg-ink p-[7px] shadow-[0_24px_60px_-20px_rgba(22,21,26,0.45)]">
+      <div className="li-float-a absolute top-[6%] left-[31%] w-[38%] rounded-[30px] bg-lilac-ink p-[7px] shadow-[0_24px_60px_-20px_rgba(46,47,92,0.55)]">
         <div className="flex aspect-[9/17] flex-col gap-2 overflow-hidden rounded-[24px] bg-white px-3 pt-3 pb-3.5">
           <div className="mx-auto mb-0.5 h-1.5 w-12 rounded-full bg-canvas" />
           <div className="flex items-center justify-between">
@@ -52,11 +52,11 @@ export function LoginIllustration() {
           </div>
           <div className="grid grid-cols-5 gap-1">
             {[1, 1, 0, 0, 0].map((on, i) => (
-              <span key={i} className={`h-1 rounded-full ${on ? "bg-ink" : "bg-canvas"}`} />
+              <span key={i} className={`h-1 rounded-full ${on ? "bg-brand" : "bg-canvas"}`} />
             ))}
           </div>
           <div className="flex items-start gap-1.5">
-            <span className="flex size-5 shrink-0 items-center justify-center rounded-md bg-ink text-[7px] font-bold text-white">AI</span>
+            <span className="flex size-5 shrink-0 items-center justify-center rounded-md bg-brand text-[7px] font-bold text-white">AI</span>
             <div className="rounded-[3px_12px_12px_12px] bg-lilac px-2 py-1.5 text-[9.5px] leading-snug font-semibold">
               What do you usually do with your family at weekends?
             </div>
@@ -78,10 +78,10 @@ export function LoginIllustration() {
           <div className="mt-auto flex flex-col items-center gap-1.5">
             <div className="flex h-6 items-center gap-[3px]">
               {[8, 16, 24, 12, 20, 10, 22, 14, 7].map((h, i) => (
-                <span key={i} className="li-eq w-[3px] rounded-full bg-ink" style={{ height: h, animationDelay: `${i * 0.08}s` }} />
+                <span key={i} className="li-eq w-[3px] rounded-full bg-brand" style={{ height: h, animationDelay: `${i * 0.08}s` }} />
               ))}
             </div>
-            <span className="flex size-11 items-center justify-center rounded-full bg-ink">
+            <span className="flex size-11 items-center justify-center rounded-full bg-brand">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round">
                 <path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3zM5 11a7 7 0 0 0 14 0M12 18v3" />
               </svg>

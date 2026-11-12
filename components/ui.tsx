@@ -91,7 +91,7 @@ export function LevelChip({ value, className = "" }: { value: number; className?
 }
 
 export const btn = {
-  dark: "inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-full bg-ink px-5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50",
+  dark: "inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-full bg-brand px-5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50",
   light:
     "inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-full border border-line-strong bg-white px-5 text-sm font-semibold text-ink transition-colors hover:bg-soft disabled:cursor-not-allowed disabled:opacity-50",
   white:

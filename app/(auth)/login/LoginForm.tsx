@@ -6,7 +6,7 @@ import { login } from "@/app/actions/auth";
 import { btn } from "@/components/ui";
 
 export const inputCls =
-  "min-h-12 w-full rounded-2xl border border-line-strong bg-white px-4 text-[15px] outline-none placeholder:text-[#A9A7B3] focus:border-ink";
+  "min-h-12 w-full rounded-2xl border border-line-strong bg-white px-4 text-[15px] outline-none placeholder:text-[#A9A7B3] focus:border-brand";
 
 export function LoginForm() {
   const [role, setRole] = useState<"student" | "teacher">("student");
@@ -29,7 +29,7 @@ export function LoginForm() {
             aria-checked={role === r}
             onClick={() => setRole(r)}
             className={`min-h-10 cursor-pointer rounded-full text-[13px] font-semibold transition-colors ${
-              role === r ? "bg-ink text-white" : "text-ink"
+              role === r ? "bg-brand text-white" : "text-ink"
             }`}
           >
             {r === "student" ? "Học sinh" : "Giáo viên"}

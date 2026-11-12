@@ -21,16 +21,16 @@ export function ScoreOverview({
   const C = 2 * Math.PI * 52;
   return (
     <div className="flex flex-wrap gap-4 px-5 pt-6 pb-3 sm:px-9">
-      <section className="flex flex-[1_1_340px] items-center gap-5 rounded-[22px] bg-ink p-5 text-white sm:p-[22px] xl:max-w-[420px]">
+      <section className="flex flex-[1_1_340px] items-center gap-5 rounded-[22px] bg-brand p-5 text-white sm:p-[22px] xl:max-w-[420px]">
         <div className="relative size-[110px] shrink-0 sm:size-[120px]">
           <svg viewBox="0 0 120 120" className="size-full" role="img" aria-label={`Tổng điểm ${fmt(scores.total)} trên 10`}>
-            <circle cx="60" cy="60" r="52" fill="none" stroke="#3A3842" strokeWidth="10" />
+            <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.22)" strokeWidth="10" />
             <circle
               cx="60"
               cy="60"
               r="52"
               fill="none"
-              stroke="#CDD0F8"
+              stroke="#FFFFFF"
               strokeWidth="10"
               strokeLinecap="round"
               strokeDasharray={`${(scores.total / 10) * C} ${C}`}
@@ -39,11 +39,11 @@ export function ScoreOverview({
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-[28px] font-extrabold sm:text-[30px]">{fmt(scores.total)}</span>
-            <span className="text-xs text-[#C9C7D1]">trên 10</span>
+            <span className="text-xs text-[#DCDDFB]">trên 10</span>
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <span className="text-[13px] text-[#C9C7D1]">Tổng điểm</span>
+          <span className="text-[13px] text-[#DCDDFB]">Tổng điểm</span>
           <span className="text-[18px] leading-[1.3] font-bold sm:text-[20px]">{headline}</span>
           {delta != null && (
             <span className={`text-[13px] font-semibold ${delta >= 0 ? "text-[#A6F0C8]" : "text-[#F6CBBF]"}`}>

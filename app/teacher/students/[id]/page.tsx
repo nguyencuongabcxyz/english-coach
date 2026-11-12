@@ -51,7 +51,7 @@ export default async function StudentDetail({ params }: PageProps<"/teacher/stud
 
   return (
     <>
-      <Breadcrumb items={[{ label: "Tổng quan lớp", href: "/teacher" }, { label: student.name }]} />
+      <Breadcrumb items={[{ label: "Học sinh", href: "/teacher/students" }, { label: student.name }]} />
 
       {/* Header */}
       <div className="flex flex-wrap items-center gap-4 border-b border-line px-5 pt-3 pb-5 sm:px-9">
@@ -68,7 +68,7 @@ export default async function StudentDetail({ params }: PageProps<"/teacher/stud
         {pending > 0 && (
           <Link
             href={`/teacher/review?student=${student.id}`}
-            className="inline-flex min-h-11 items-center rounded-full bg-ink px-5 text-sm font-semibold text-white"
+            className="inline-flex min-h-11 items-center rounded-full bg-brand px-5 text-sm font-semibold text-white"
           >
             Duyệt {pending} bài
           </Link>

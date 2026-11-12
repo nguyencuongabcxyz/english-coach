@@ -258,7 +258,7 @@ export function PracticeClient({ session, initialAnswers, initials, demo }: Prop
                 aria-label={`Câu ${i + 1}${answers[i] ? " (đã trả lời)" : ""}`}
                 onClick={() => goTo(i)}
                 className={`h-1.5 cursor-pointer rounded-full ${
-                  answers[i] ? "bg-ink" : i === idx ? "bg-muted" : "bg-canvas"
+                  answers[i] ? "bg-brand" : i === idx ? "bg-muted" : "bg-canvas"
                 }`}
               />
             ))}
@@ -279,7 +279,7 @@ export function PracticeClient({ session, initialAnswers, initials, demo }: Prop
 
           {/* AI question bubble */}
           <div className="flex items-start gap-3">
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-ink text-xs font-bold text-white">AI</span>
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand text-xs font-bold text-white">AI</span>
             <div className="flex max-w-[560px] flex-col gap-3 rounded-[4px_20px_20px_20px] bg-lilac px-5 py-[18px]">
               <span className="text-[18px] leading-[1.4] font-semibold sm:text-[20px]">{question.q}</span>
               {showHint && question.hint && <span className="text-sm text-lilac-ink">{question.hint}</span>}
@@ -329,7 +329,7 @@ export function PracticeClient({ session, initialAnswers, initials, demo }: Prop
                 <button
                   onClick={startRecording}
                   aria-label="Bắt đầu nói"
-                  className="flex size-24 cursor-pointer items-center justify-center rounded-full bg-ink text-white transition-transform hover:scale-105"
+                  className="flex size-24 cursor-pointer items-center justify-center rounded-full bg-brand text-white transition-transform hover:scale-105"
                 >
                   <Icon d={ICON.mic} size={36} />
                 </button>
@@ -349,7 +349,7 @@ export function PracticeClient({ session, initialAnswers, initials, demo }: Prop
                 </button>
                 <div aria-hidden="true" className="flex h-9 items-center gap-1">
                   {levels.map((l, i) => (
-                    <span key={i} className="w-1 rounded bg-ink transition-[height] duration-75" style={{ height: `${Math.round(8 + l * 28)}px` }} />
+                    <span key={i} className="w-1 rounded bg-brand transition-[height] duration-75" style={{ height: `${Math.round(8 + l * 28)}px` }} />
                   ))}
                 </div>
                 <span className="text-lg font-bold" aria-live="polite">

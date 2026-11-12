@@ -33,7 +33,7 @@ export function MobileNav(p: Props) {
     <>
       <header className="mb-2 flex items-center justify-between gap-3 px-2 pt-1 lg:hidden">
         <div className="flex items-center gap-2.5">
-          <div className="flex size-9 items-center justify-center rounded-xl bg-ink">
+          <div className="flex size-9 items-center justify-center rounded-xl bg-brand">
             <Icon d={ICON.logo} size={18} stroke="#fff" width={2.2} />
           </div>
           <div className="flex flex-col leading-tight">
@@ -84,7 +84,7 @@ export function MobileNav(p: Props) {
                     <Icon d={item.d} />
                     <span className="flex-1">{item.label}</span>
                     {item.badge && (
-                      <span className="rounded-full bg-ink px-2 py-0.5 text-[11px] font-bold text-white">{item.badge}</span>
+                      <span className="rounded-full bg-brand px-2 py-0.5 text-[11px] font-bold text-white">{item.badge}</span>
                     )}
                   </Link>
                 );

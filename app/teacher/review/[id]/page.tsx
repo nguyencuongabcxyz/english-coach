@@ -104,7 +104,7 @@ export default async function ReviewDetail({ params, searchParams }: PageProps<"
               rows={4}
               defaultValue={session.teacher_comment ?? ""}
               placeholder="VD: Em nói rõ ràng hơn rồi. Tuần này luyện thêm từ nối nhé."
-              className="rounded-2xl border border-sand-deep bg-white px-3.5 py-3 text-sm outline-none focus:border-ink"
+              className="rounded-2xl border border-sand-deep bg-white px-3.5 py-3 text-sm outline-none focus:border-brand"
             />
           </label>
           <div className="flex flex-wrap gap-2.5">
