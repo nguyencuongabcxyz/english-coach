@@ -99,3 +99,44 @@
     display: none;
   }
 }
+
+/* Login illustration: gentle floating cards + live waveform */
+@keyframes li-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+@keyframes li-eq {
+  0%,
+  100% {
+    transform: scaleY(0.45);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+.li-float-a {
+  animation: li-float 6s ease-in-out infinite;
+}
+.li-float-b {
+  animation: li-float 7s ease-in-out 1.2s infinite;
+}
+.li-float-c {
+  animation: li-float 5.5s ease-in-out 0.6s infinite;
+}
+.li-eq {
+  animation: li-eq 1s ease-in-out infinite;
+  transform-origin: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .li-float-a,
+  .li-float-b,
+  .li-float-c,
+  .li-eq {
+    animation: none;
+  }
+}

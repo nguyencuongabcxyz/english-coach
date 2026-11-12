@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import { login } from "@/app/actions/auth";
-import { Icon, ICON } from "@/components/icons";
 import { btn } from "@/components/ui";
 
 export const inputCls =
@@ -74,22 +73,6 @@ export function LoginForm() {
 
       <button type="submit" disabled={pending} className={`${btn.dark} min-h-12 w-full`}>
         {pending ? "Đang đăng nhập…" : `Đăng nhập với vai trò ${isStudent ? "học sinh" : "giáo viên"}`}
-      </button>
-
-      <div className="flex items-center gap-3 text-xs text-muted">
-        <span className="h-px flex-1 bg-line" />
-        hoặc
-        <span className="h-px flex-1 bg-line" />
-      </div>
-
-      <button
-        type="button"
-        disabled
-        title="Sắp có: đăng nhập một lần bằng tài khoản trường"
-        className={`${btn.light} min-h-12 w-full`}
-      >
-        <Icon d={ICON.school} size={16} /> Đăng nhập bằng tài khoản trường
-        <span className="rounded-full bg-chip px-2 py-0.5 text-[11px] text-muted">Sắp có</span>
       </button>
 
       <p className="m-0 text-center text-[13px] text-muted">
