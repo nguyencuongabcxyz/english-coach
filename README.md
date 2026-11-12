@@ -33,7 +33,7 @@ npm run dev
 
 Lần chạy đầu tự tạo dữ liệu mẫu (xem `lib/seed.ts`):
 
-- Giáo viên (quản trị): `ha.tran@thpt-demo.edu.vn` / `demo1234`
+- Giáo viên (quản trị): `admin@edu.vn` / `demo1234`
 - Học sinh: `HS-11A2-014` (Nguyễn Minh Anh) / `demo1234`
 - Học sinh chưa kích hoạt: `HS-11A2-022`, mã kích hoạt `QX7P2L`
 

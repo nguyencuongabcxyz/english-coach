@@ -8,7 +8,7 @@ import type { AnswerEvaluation, SessionSummary, SpeechMetrics } from "./types";
  * Demo data, created automatically the first time the database is empty.
  *
  * Demo accounts (password for every activated account: demo1234):
- *   Teacher: ha.tran@thpt-demo.edu.vn
+ *   Teacher: admin@edu.vn
  *   Student: HS-11A2-014 (Nguyễn Minh Anh) and the other HS-11A2-xxx codes below
  * Students not activated yet (use "Kích hoạt tài khoản"):
  *   HS-11A2-021 with activation code MA6KYT
@@ -117,7 +117,7 @@ export async function seed(q: QueryFn) {
   await q(`INSERT INTO classes (id, name, grade, teacher_id) VALUES ('c-11a2', '11A2', 11, $1)`, [teacherId]);
   await q(
     `INSERT INTO users (id, role, login, name, class_id, password_hash, activated, is_admin, last_active_at)
-     VALUES ($1, 'teacher', 'ha.tran@thpt-demo.edu.vn', 'Trần Thu Hà', 'c-11a2', $2, TRUE, TRUE, now())`,
+     VALUES ($1, 'teacher', 'admin@edu.vn', 'Trần Thu Hà', 'c-11a2', $2, TRUE, TRUE, now())`,
     [teacherId, hash],
   );
 

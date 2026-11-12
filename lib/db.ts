@@ -138,6 +138,12 @@ async function init() {
     const { seed } = await import("./seed");
     await seed(q);
   }
+  // The demo admin's login used to be ha.tran@thpt-demo.edu.vn; it is now the simpler admin@edu.vn.
+  await q(
+    `UPDATE users SET login = 'admin@edu.vn'
+     WHERE id = 't-ha' AND login = 'ha.tran@thpt-demo.edu.vn'
+       AND NOT EXISTS (SELECT 1 FROM users WHERE login = 'admin@edu.vn')`,
+  );
   // The first teacher becomes admin if there is none yet.
   await q(
     `UPDATE users SET is_admin = TRUE
