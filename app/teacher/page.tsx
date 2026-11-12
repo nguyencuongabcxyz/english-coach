@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { classOverview, getClass } from "@/lib/data";
-import { AppShell, initials } from "@/components/AppShell";
+import { initials } from "@/components/AppShell";
 import { Breadcrumb, btn } from "@/components/ui";
 import { Icon, ICON } from "@/components/icons";
 import { fmt, level, SKILL_SHORT_VI, SKILL_VI, SKILLS, weakestSkill } from "@/lib/skills";
@@ -28,7 +28,7 @@ export default async function TeacherHome() {
   const firstName = user.name.split(" ").at(-1);
 
   return (
-    <AppShell user={user} active="teacher">
+    <>
       <Breadcrumb
         items={[{ label: `Cô ${firstName}` }, { label: "Tổng quan lớp" }]}
         right={
@@ -226,7 +226,7 @@ export default async function TeacherHome() {
           </table>
         </div>
       </section>
-    </AppShell>
+    </>
   );
 }
 

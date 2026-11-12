@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Icon, ICON } from "./icons";
-import type { NavItem, NavKey } from "@/lib/nav";
+import type { NavItem } from "@/lib/nav";
+import { useActiveKey, useStayHere } from "./NavLinks";
 
 type Props = {
   items: NavItem[];
-  active: NavKey;
   portal: string;
   userName: string;
   userRole: string;
@@ -20,6 +20,8 @@ type Props = {
 /** Top bar + slide-in drawer + bottom tab bar for phones and tablets (< lg). */
 export function MobileNav(p: Props) {
   const [open, setOpen] = useState(false);
+  const active = useActiveKey(p.items);
+  const stay = useStayHere();
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
@@ -65,13 +67,16 @@ export function MobileNav(p: Props) {
             </div>
             <div className="flex flex-col gap-1">
               {p.items.map((item) => {
-                const on = item.key === p.active;
+                const on = item.key === active;
                 return (
                   <Link
                     key={item.key}
                     href={item.href}
                     aria-current={on ? "page" : undefined}
-                    onClick={() => setOpen(false)}
+                    onClick={(e) => {
+                      if (stay(item)) e.preventDefault();
+                      setOpen(false);
+                    }}
                     className={`flex min-h-12 items-center gap-3 rounded-full px-4 text-[15px] ${
                       on ? "bg-white font-bold shadow-sm" : "font-medium"
                     }`}
@@ -122,12 +127,15 @@ export function MobileNav(p: Props) {
       >
         <ul className="mx-auto flex max-w-xl justify-around">
           {p.items.map((item) => {
-            const on = item.key === p.active;
+            const on = item.key === active;
             return (
               <li key={item.key} className="flex-1">
                 <Link
                   href={item.href}
                   aria-current={on ? "page" : undefined}
+                  onClick={(e) => {
+                    if (stay(item)) e.preventDefault();
+                  }}
                   className={`relative flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] ${
                     on ? "font-bold text-ink" : "font-medium text-muted"
                   }`}

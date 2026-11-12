@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { pendingReviews } from "@/lib/data";
-import { AppShell, initials } from "@/components/AppShell";
+import { initials } from "@/components/AppShell";
 import { Breadcrumb, formatDateTime, PageHeader } from "@/components/ui";
 import { Icon, ICON } from "@/components/icons";
 import { getTopic } from "@/lib/topics";
@@ -22,7 +22,7 @@ export default async function ReviewList({ searchParams }: PageProps<"/teacher/r
   const qs = (t: string) => `/teacher/review?tab=${t}${student ? `&student=${student}` : ""}`;
 
   return (
-    <AppShell user={user} active="review">
+    <>
       <Breadcrumb items={[{ label: "Tổng quan lớp", href: "/teacher" }, { label: "Duyệt bài luyện" }]} />
       <PageHeader
         title="Duyệt bài luyện"
@@ -90,6 +90,6 @@ export default async function ReviewList({ searchParams }: PageProps<"/teacher/r
           );
         })}
       </ul>
-    </AppShell>
+    </>
   );
 }

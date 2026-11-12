@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { studentProfile } from "@/lib/data";
 import { one } from "@/lib/db";
-import { AppShell, initials } from "@/components/AppShell";
+import { initials } from "@/components/AppShell";
 import { Breadcrumb, btn, EmptyState, PageHeader, shortDate } from "@/components/ui";
 import { getTopic, TOPICS } from "@/lib/topics";
 import { SKILL_SHORT_VI } from "@/lib/skills";
@@ -41,7 +41,7 @@ export default async function ProgressPage() {
     p.progress == null ? "Chưa đủ dữ liệu" : p.progress > 0 ? `Đang tiến bộ · +${p.progress}` : p.progress < 0 ? `Cần cố gắng · ${p.progress}` : "Ổn định · ±0.0";
 
   return (
-    <AppShell user={user} active="progress">
+    <>
       <Breadcrumb items={[{ label: user.name.split(" ").slice(-2).join(" "), href: "/dashboard" }, { label: "Tiến bộ của tôi" }]} />
       <PageHeader
         title="Tiến bộ của tôi"
@@ -90,7 +90,7 @@ export default async function ProgressPage() {
           }
         />
       )}
-    </AppShell>
+    </>
   );
 }
 

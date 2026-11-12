@@ -1,6 +1,7 @@
 import "server-only";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 import { jwtVerify, SignJWT } from "jose";
 import { one, sql } from "./db";
 import type { Role, UserRow } from "./types";
@@ -36,7 +37,8 @@ export async function destroySession() {
   (await cookies()).delete(COOKIE);
 }
 
-export async function getUser(): Promise<UserRow | null> {
+/** Cached per request, so layout + page share one lookup. */
+export const getUser = cache(async function getUser(): Promise<UserRow | null> {
   const token = (await cookies()).get(COOKIE)?.value;
   if (!token) return null;
   try {
@@ -46,7 +48,7 @@ export async function getUser(): Promise<UserRow | null> {
   } catch {
     return null;
   }
-}
+});
 
 export async function requireUser(role: Role): Promise<UserRow> {
   const user = await getUser();

@@ -2,7 +2,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { inProgressSession, studentProfile } from "@/lib/data";
-import { AppShell } from "@/components/AppShell";
 import { Breadcrumb, btn, PageHeader, Pill } from "@/components/ui";
 import { Icon, ICON } from "@/components/icons";
 import { findSubtopic, getTopic, TOPICS } from "@/lib/topics";
@@ -27,7 +26,7 @@ export default async function PracticeIndex() {
   const again = latest ? findSubtopic(latest.subtopic) : null;
 
   return (
-    <AppShell user={user} active="practice">
+    <>
       <Breadcrumb items={[{ label: "Trang chủ", href: "/dashboard" }, { label: "Luyện nói với AI" }]} />
       <PageHeader title="Luyện nói với AI" subtitle="Chọn một bài luyện để bắt đầu. AI sẽ hỏi, bạn trả lời bằng giọng nói." />
       <div className="grid grid-cols-1 gap-4 px-5 pt-6 pb-8 sm:px-9 md:grid-cols-3">
@@ -68,7 +67,7 @@ export default async function PracticeIndex() {
           <Icon d={ICON.topics} size={16} /> Xem tất cả chủ đề
         </Link>
       </div>
-    </AppShell>
+    </>
   );
 }
 

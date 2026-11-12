@@ -2,7 +2,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { latestCompleted } from "@/lib/data";
-import { AppShell } from "@/components/AppShell";
 import { Breadcrumb, btn, EmptyState, PageHeader } from "@/components/ui";
 
 export default async function FeedbackIndex() {
@@ -10,7 +9,7 @@ export default async function FeedbackIndex() {
   const latest = await latestCompleted(user.id);
   if (latest) redirect(`/feedback/${latest.id}`);
   return (
-    <AppShell user={user} active="feedback">
+    <>
       <Breadcrumb items={[{ label: "Trang chủ", href: "/dashboard" }, { label: "Phản hồi từ AI" }]} />
       <PageHeader title="Phản hồi từ AI" subtitle="Phản hồi sẽ xuất hiện ở đây sau mỗi buổi luyện." />
       <EmptyState
@@ -22,6 +21,6 @@ export default async function FeedbackIndex() {
           </Link>
         }
       />
-    </AppShell>
+    </>
   );
 }

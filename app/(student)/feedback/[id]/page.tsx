@@ -3,7 +3,6 @@ import { notFound, redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { getAnswers, getSession, listCompletedSessions } from "@/lib/data";
 import { one } from "@/lib/db";
-import { AppShell } from "@/components/AppShell";
 import { Breadcrumb, btn, formatDateTime, Pill } from "@/components/ui";
 import { Icon, ICON } from "@/components/icons";
 import { PlayRecording } from "@/components/SpeakButton";
@@ -37,7 +36,7 @@ export default async function FeedbackPage({ params }: PageProps<"/feedback/[id]
   const next = summary.nextActivity;
 
   return (
-    <AppShell user={user} active="feedback">
+    <>
       <Breadcrumb
         items={[
           { label: session.title, href: "/progress" },
@@ -137,6 +136,6 @@ export default async function FeedbackPage({ params }: PageProps<"/feedback/[id]
           Đã lưu vào Tiến bộ của tôi
         </Link>
       </div>
-    </AppShell>
+    </>
   );
 }

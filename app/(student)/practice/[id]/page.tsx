@@ -1,7 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { getAnswers, getSession } from "@/lib/data";
-import { AppShell } from "@/components/AppShell";
 import { Breadcrumb } from "@/components/ui";
 import { getTopic } from "@/lib/topics";
 import { SKILL_VI } from "@/lib/skills";
@@ -22,7 +21,7 @@ export default async function PracticePage({ params }: PageProps<"/practice/[id]
   const focus = session.focus_skill ? SKILL_VI[session.focus_skill] : null;
 
   return (
-    <AppShell user={user} active="practice">
+    <>
       <Breadcrumb
         items={[
           { label: "Chủ đề luyện nói", href: "/topics" },
@@ -52,6 +51,6 @@ export default async function PracticePage({ params }: PageProps<"/practice/[id]
         initials={user.name.split(" ").slice(-2).map((w) => w[0]).join("").toUpperCase()}
         demo={!aiEnabled()}
       />
-    </AppShell>
+    </>
   );
 }

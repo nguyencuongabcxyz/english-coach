@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { logout } from "@/app/actions/auth";
 import { Icon, ICON } from "./icons";
 import { MobileNav } from "./MobileNav";
+import { SidebarLinks } from "./NavLinks";
 import { STUDENT_NAV, TEACHER_NAV, type NavKey } from "@/lib/nav";
 import type { UserRow } from "@/lib/types";
 import { one } from "@/lib/db";
@@ -15,7 +15,6 @@ export function initials(name: string) {
 
 type Props = {
   user: UserRow;
-  active: NavKey;
   children: React.ReactNode;
 };
 
@@ -42,7 +41,7 @@ async function shellData(user: UserRow) {
   return { badges, className: cls?.name ?? "" };
 }
 
-export async function AppShell({ user, active, children }: Props) {
+export async function AppShell({ user, children }: Props) {
   const { badges, className } = await shellData(user);
   const isTeacher = user.role === "teacher";
   const items = (isTeacher ? TEACHER_NAV : STUDENT_NAV).map((i) => ({ ...i, badge: badges[i.key] }));
@@ -64,25 +63,7 @@ export async function AppShell({ user, active, children }: Props) {
             <Brand portal={isTeacher ? "Cổng giáo viên" : "Cổng học sinh"} />
             <div className="flex flex-col gap-1">
               <span className="px-3 pb-1.5 text-xs text-muted">Menu chính</span>
-              {items.map((item) => {
-                const on = item.key === active;
-                return (
-                  <Link
-                    key={item.key}
-                    href={item.href}
-                    aria-current={on ? "page" : undefined}
-                    className={`flex min-h-11 items-center gap-3 rounded-full px-3.5 text-sm transition-colors ${
-                      on ? "bg-white font-bold shadow-[0_1px_2px_rgba(22,21,26,0.08)]" : "font-medium hover:bg-white/60"
-                    }`}
-                  >
-                    <Icon d={item.d} />
-                    <span className="flex-1">{item.label}</span>
-                    {item.badge && !on && (
-                      <span className="rounded-full bg-ink px-2 py-0.5 text-[11px] font-bold text-white">{item.badge}</span>
-                    )}
-                  </Link>
-                );
-              })}
+              <SidebarLinks items={items} />
             </div>
             <div className="mt-auto flex flex-col gap-3">
               <div className="flex flex-col gap-1.5 rounded-[18px] bg-white p-3.5">
@@ -118,7 +99,6 @@ export async function AppShell({ user, active, children }: Props) {
         <div className="flex min-w-0 flex-1 flex-col">
           <MobileNav
             items={items}
-            active={active}
             portal={isTeacher ? "Cổng giáo viên" : "Cổng học sinh"}
             userName={user.name}
             userRole={role}

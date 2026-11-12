@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { getAnswers, getSession } from "@/lib/data";
 import { one } from "@/lib/db";
-import { AppShell } from "@/components/AppShell";
 import { Breadcrumb, btn, formatDateTime } from "@/components/ui";
 import { AnswerDetails, pickNotes, ScoreOverview, StrengthsImprovements } from "@/components/FeedbackView";
 import { getTopic } from "@/lib/topics";
@@ -26,7 +25,7 @@ export default async function ReviewDetail({ params, searchParams }: PageProps<"
   const reviewed = session.teacher_status === "approved";
 
   return (
-    <AppShell user={user} active="review">
+    <>
       <Breadcrumb
         items={[
           { label: "Duyệt bài luyện", href: "/teacher/review" },
@@ -115,6 +114,6 @@ export default async function ReviewDetail({ params, searchParams }: PageProps<"
           </div>
         </form>
       </div>
-    </AppShell>
+    </>
   );
 }

@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { inProgressSession, studentProfile } from "@/lib/data";
-import { AppShell } from "@/components/AppShell";
 import { Icon, ICON } from "@/components/icons";
 import { Breadcrumb, btn, formatDateTime, Pill } from "@/components/ui";
 import { findSubtopic, getTopic, TOPICS, topicColors } from "@/lib/topics";
@@ -48,7 +47,7 @@ export default async function Dashboard({ searchParams }: PageProps<"/dashboard"
   const welcome = sp.welcome === "1" || profile.count === 0;
 
   return (
-    <AppShell user={user} active="overview">
+    <>
       <Breadcrumb
         items={[{ label: "Trang chủ" }, { label: "Tổng quan" }]}
         right={
@@ -261,7 +260,7 @@ export default async function Dashboard({ searchParams }: PageProps<"/dashboard"
           ))}
         </ol>
       </section>
-    </AppShell>
+    </>
   );
 }
 

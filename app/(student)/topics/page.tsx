@@ -1,6 +1,5 @@
 import { requireUser } from "@/lib/auth";
 import { listCompletedSessions } from "@/lib/data";
-import { AppShell } from "@/components/AppShell";
 import { Breadcrumb, PageHeader } from "@/components/ui";
 import { TOPICS } from "@/lib/topics";
 import { TopicsBrowser } from "./TopicsBrowser";
@@ -14,7 +13,7 @@ export default async function TopicsPage() {
   for (const s of sessions) counts[s.topic_id] = (counts[s.topic_id] ?? 0) + 1;
 
   return (
-    <AppShell user={user} active="topics">
+    <>
       <Breadcrumb items={[{ label: user.name.split(" ").slice(-2).join(" "), href: "/dashboard" }, { label: "Chủ đề luyện nói" }]} />
       <PageHeader
         title="Chủ đề luyện nói"
@@ -33,6 +32,6 @@ export default async function TopicsPage() {
           subs: t.subtopics.map((s) => ({ id: s.id, name: s.name, count: s.questions.length })),
         }))}
       />
-    </AppShell>
+    </>
   );
 }

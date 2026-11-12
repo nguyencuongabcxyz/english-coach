@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { studentProfile } from "@/lib/data";
 import { one } from "@/lib/db";
-import { AppShell, initials } from "@/components/AppShell";
+import { initials } from "@/components/AppShell";
 import { Breadcrumb, LevelChip, PageHeader, shortDate } from "@/components/ui";
 import { getTopic } from "@/lib/topics";
 import { fmt, SKILL_SHORT_VI, SKILL_VI, SKILLS } from "@/lib/skills";
@@ -21,7 +21,7 @@ export default async function StudentDetail({ params }: PageProps<"/teacher/stud
   const max = 10;
 
   return (
-    <AppShell user={user} active="teacher">
+    <>
       <Breadcrumb items={[{ label: "Tổng quan lớp", href: "/teacher" }, { label: student.name }]} />
       <PageHeader title={student.name} subtitle={`${student.login} · ${p.count} lượt luyện · ${p.topicsDone.length}/5 chủ đề`} />
 
@@ -130,6 +130,6 @@ export default async function StudentDetail({ params }: PageProps<"/teacher/stud
           </table>
         </div>
       </section>
-    </AppShell>
+    </>
   );
 }
