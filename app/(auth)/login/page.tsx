@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { AppLogo } from "@/components/AppLogo";
 import { getUser } from "@/lib/auth";
 import { Icon, ICON } from "@/components/icons";
 import { LoginForm } from "./LoginForm";
@@ -13,9 +14,7 @@ export default async function LoginPage() {
     <>
       <section className="hidden flex-1 flex-col gap-5 px-8 py-6 lg:flex xl:px-12">
         <div className="flex items-center gap-2.5">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-brand">
-            <Icon d={ICON.logo} size={20} stroke="#fff" width={2.2} />
-          </div>
+          <AppLogo size={42} />
           <span className="text-[15px] font-extrabold">AI English Speaking Coach</span>
         </div>
         <div className="mt-2 flex flex-col gap-4">
@@ -44,9 +43,7 @@ export default async function LoginPage() {
       <section className="flex flex-1 items-center justify-center rounded-[22px] bg-white px-5 py-10 sm:px-10 lg:max-w-[620px]">
         <div className="w-full max-w-[400px]">
           <div className="mb-8 flex items-center gap-2.5 lg:hidden">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-brand">
-              <Icon d={ICON.logo} size={20} stroke="#fff" width={2.2} />
-            </div>
+            <AppLogo size={42} />
             <span className="text-[15px] font-extrabold">AI English Speaking Coach</span>
           </div>
           <LoginForm />

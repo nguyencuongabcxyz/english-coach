@@ -1,9 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <path d="M14 4h36a10 10 0 0 1 10 10v28a10 10 0 0 1-10 10H27l-11 9v-9h-2A10 10 0 0 1 4 42V14A10 10 0 0 1 14 4z" fill="#4F55D8"/>
-  <g stroke-width="6.5" stroke-linecap="round">
-    <line x1="19" y1="22" x2="19" y2="34" stroke="#FFFFFF"/>
-    <line x1="28" y1="14" x2="28" y2="42" stroke="#A9E3C6"/>
-    <line x1="37" y1="19" x2="37" y2="37" stroke="#FBE5BC"/>
-    <line x1="46" y1="24" x2="46" y2="32" stroke="#F6CBBF"/>
+  <g fill="none" stroke-width="6.5" stroke-linecap="round">
+    <path d="M19 16h22" stroke="#FFFFFF"/>
+    <path d="M19 28h15" stroke="#A9E3C6"/>
+    <path d="M19 40h25" stroke="#FBE5BC"/>
+    <path d="M51 23v10" stroke="#F6CBBF"/>
+    <path d="M19 16v24" stroke="#FFFFFF"/>
   </g>
 </svg>

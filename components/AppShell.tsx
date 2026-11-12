@@ -1,4 +1,5 @@
 import { logout } from "@/app/actions/auth";
+import { AppLogo } from "@/components/AppLogo";
 import { Icon, ICON } from "./icons";
 import { MobileNav } from "./MobileNav";
 import { SidebarLinks } from "./NavLinks";
@@ -121,9 +122,7 @@ export async function AppShell({ user, children }: Props) {
 export function Brand({ portal }: { portal: string }) {
   return (
     <div className="flex items-center gap-2.5 px-2">
-      <div className="flex size-10 items-center justify-center rounded-xl bg-brand">
-        <Icon d={ICON.logo} size={20} stroke="#fff" width={2.2} />
-      </div>
+      <AppLogo size={42} />
       <div className="flex flex-col">
         <span className="text-[15px] font-extrabold tracking-[-0.2px]">Speaking Coach</span>
         <span className="text-[11px] text-muted">{portal}</span>

@@ -35,12 +35,11 @@ export default async function TeacherHome() {
       ? "Chưa đủ dữ liệu để so sánh giữa các tuần."
       : `Điểm TB ${trendDelta >= 0 ? "tăng" : "giảm"} ${Math.abs(trendDelta).toFixed(1)} điểm: ${fmt(trendFrom!.avg)} (tuần ${trendFrom!.range}) → ${fmt(trendTo!.avg)} (tuần ${trendTo!.range}).`;
   const weakest = o.skillAvg ? weakestSkill(o.skillAvg) : null;
-  const firstName = user.name.split(" ").at(-1);
 
   return (
     <>
       <Breadcrumb
-        items={[{ label: `Cô ${firstName}` }, { label: "Tổng quan lớp" }]}
+        items={[{ label: user.name }, { label: "Tổng quan lớp" }]}
         right={
           <label className="flex items-center gap-2 text-[13px]">
             <span className="text-muted">Lớp</span>

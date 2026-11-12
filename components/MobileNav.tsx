@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { AppLogo } from "@/components/AppLogo";
 import { useEffect, useState } from "react";
 import { Icon, ICON } from "./icons";
 import type { NavItem } from "@/lib/nav";
@@ -33,9 +34,7 @@ export function MobileNav(p: Props) {
     <>
       <header className="mb-2 flex items-center justify-between gap-3 px-2 pt-1 lg:hidden">
         <div className="flex items-center gap-2.5">
-          <div className="flex size-9 items-center justify-center rounded-xl bg-brand">
-            <Icon d={ICON.logo} size={18} stroke="#fff" width={2.2} />
-          </div>
+          <AppLogo size={38} />
           <div className="flex flex-col leading-tight">
             <span className="text-sm font-extrabold">Speaking Coach</span>
             <span className="text-[11px] text-muted">{p.portal}</span>
