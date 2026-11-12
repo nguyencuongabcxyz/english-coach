@@ -11,8 +11,9 @@ const STEPS = ["Xác minh", "Mật khẩu", "Nói thử"];
 
 export function ActivateForm() {
   const [state, action, pending] = useActionState(activate, undefined);
-  const [fields, setFields] = useState({ name: "", code: "", grade: "11A2", activation: "" });
+  const [fields, setFields] = useState({ code: "", activation: "" });
   const verified = state?.ok === "verified";
+  const account = state?.account;
   const step = verified ? 1 : 0;
 
   return (
@@ -50,41 +51,17 @@ export function ActivateForm() {
       {!verified ? (
         <div key="verify" className="flex flex-col gap-5">
           <label className="flex flex-col gap-2">
-            <span className="text-[13px] font-semibold">Họ và tên</span>
+            <span className="text-[13px] font-semibold">Mã học sinh / Email giáo viên</span>
             <input
+              name="code"
+              required
+              autoComplete="username"
               className={inputCls}
-              placeholder="Nguyễn Minh Anh"
-              value={fields.name}
-              onChange={(e) => setFields({ ...fields, name: e.target.value })}
+              placeholder="VD: HS-11A2-014"
+              value={fields.code}
+              onChange={(e) => setFields({ ...fields, code: e.target.value })}
             />
           </label>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <label className="flex flex-col gap-2">
-              <span className="text-[13px] font-semibold">Mã học sinh / Email giáo viên</span>
-              <input
-                name="code"
-                required
-                className={inputCls}
-                placeholder="HS-11A2-014"
-                value={fields.code}
-                onChange={(e) => setFields({ ...fields, code: e.target.value })}
-              />
-            </label>
-            <label className="flex flex-col gap-2">
-              <span className="text-[13px] font-semibold">Khối / Lớp</span>
-              <select
-                className={inputCls}
-                value={fields.grade}
-                onChange={(e) => setFields({ ...fields, grade: e.target.value })}
-              >
-                {["10A1", "10A2", "11A1", "11A2", "12A1", "12A2"].map((c) => (
-                  <option key={c} value={c}>
-                    Khối {c.slice(0, 2)} · {c}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
           <label className="flex flex-col gap-2">
             <span className="text-[13px] font-semibold">Mã kích hoạt</span>
             <input
@@ -100,16 +77,45 @@ export function ActivateForm() {
               Chưa có mã? Học sinh hỏi giáo viên Tiếng Anh; giáo viên hỏi quản trị viên của trường.
             </span>
           </label>
-          <div className="flex gap-2.5 rounded-2xl bg-sand px-4 py-3 text-[13px] leading-normal text-sand-ink">
-            <Icon d={ICON.mic} size={16} className="mt-0.5 shrink-0" />
-            Sau bước này, bạn sẽ cho phép dùng micro và nói thử 30 giây để AI gợi ý bài luyện đầu tiên phù hợp với bạn.
-          </div>
         </div>
       ) : (
         <div key="password" className="flex flex-col gap-5">
-          <p className="m-0 rounded-xl bg-good-bg px-3.5 py-2.5 text-[13px] font-medium text-good">
-            Đã xác minh tài khoản {fields.code}. Hãy đặt mật khẩu của bạn.
-          </p>
+          {account && (
+            <div className="flex flex-col gap-3 rounded-2xl bg-good-bg p-4">
+              <span className="flex items-center gap-2 text-[13px] font-semibold text-good">
+                <Icon d={ICON.check} size={15} width={2.6} /> Đã xác minh. Kiểm tra lại thông tin của bạn:
+              </span>
+              <dl className="m-0 flex flex-col rounded-xl bg-white px-3.5 py-1 text-[13px]">
+                <div className="flex justify-between gap-4 border-b border-shell py-2">
+                  <dt className="text-muted">Họ và tên</dt>
+                  <dd className="m-0 text-right font-bold">{account.name}</dd>
+                </div>
+                <div className="flex justify-between gap-4 border-b border-shell py-2">
+                  <dt className="text-muted">{account.role === "teacher" ? "Email" : "Mã học sinh"}</dt>
+                  <dd className="m-0 text-right font-bold">{fields.code.trim()}</dd>
+                </div>
+                <div className={`flex justify-between gap-4 py-2 ${account.teacherName ? "border-b border-shell" : ""}`}>
+                  <dt className="text-muted">{account.role === "teacher" ? "Lớp phụ trách" : "Lớp"}</dt>
+                  <dd className="m-0 text-right font-bold">{account.className ?? "–"}</dd>
+                </div>
+                {account.teacherName && (
+                  <div className="flex justify-between gap-4 py-2">
+                    <dt className="text-muted">Giáo viên</dt>
+                    <dd className="m-0 text-right font-bold">{account.teacherName}</dd>
+                  </div>
+                )}
+              </dl>
+              <span className="text-xs text-good">
+                Thông tin sai? Đừng tiếp tục, hãy báo {account.role === "teacher" ? "quản trị viên" : "giáo viên"} của bạn.
+              </span>
+            </div>
+          )}
+          {account?.role === "student" && (
+            <div className="flex gap-2.5 rounded-2xl bg-sand px-4 py-3 text-[13px] leading-normal text-sand-ink">
+              <Icon d={ICON.mic} size={16} className="mt-0.5 shrink-0" />
+              Sau khi kích hoạt, bạn sẽ nói thử 30 giây để AI gợi ý bài luyện đầu tiên phù hợp với bạn.
+            </div>
+          )}
           <label className="flex flex-col gap-2">
             <span className="text-[13px] font-semibold">Mật khẩu mới</span>
             <input key="pw" name="password" type="password" required minLength={6} autoComplete="new-password" className={inputCls} />

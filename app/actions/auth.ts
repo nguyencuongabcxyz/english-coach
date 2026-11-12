@@ -6,7 +6,8 @@ import { createSession, destroySession } from "@/lib/auth";
 import { one, sql } from "@/lib/db";
 import type { UserRow } from "@/lib/types";
 
-export type FormState = { error?: string; ok?: string } | undefined;
+export type AccountInfo = { name: string; role: "student" | "teacher"; className: string | null; teacherName: string | null };
+export type FormState = { error?: string; ok?: string; account?: AccountInfo } | undefined;
 
 const norm = (s: FormDataEntryValue | null) => String(s ?? "").trim();
 
@@ -47,12 +48,23 @@ export async function activate(_: FormState, form: FormData): Promise<FormState>
         : "Mã học sinh hoặc mã kích hoạt không đúng. Hãy hỏi giáo viên Tiếng Anh của bạn.",
     };
   }
-  if (step === "verify") return { ok: "verified" };
+  // Show the real account details so the person can check it is theirs.
+  const cls = await one<{ name: string; teacher_name: string | null }>(
+    `SELECT c.name, t.name AS teacher_name FROM classes c LEFT JOIN users t ON t.id = c.teacher_id WHERE c.id = $1`,
+    [user.class_id],
+  );
+  const account: AccountInfo = {
+    name: user.name,
+    role: user.role,
+    className: cls?.name ?? null,
+    teacherName: user.role === "student" ? (cls?.teacher_name ?? null) : null,
+  };
+  if (step === "verify") return { ok: "verified", account };
 
   const password = norm(form.get("password"));
   const confirm = norm(form.get("confirm"));
-  if (password.length < 6) return { error: "Mật khẩu cần ít nhất 6 ký tự.", ok: "verified" };
-  if (password !== confirm) return { error: "Mật khẩu nhập lại không khớp.", ok: "verified" };
+  if (password.length < 6) return { error: "Mật khẩu cần ít nhất 6 ký tự.", ok: "verified", account };
+  if (password !== confirm) return { error: "Mật khẩu nhập lại không khớp.", ok: "verified", account };
   const hash = await bcrypt.hash(password, 10);
   await sql(
     `UPDATE users SET password_hash = $2, activated = TRUE, activation_code = NULL, reset_requested_at = NULL,
