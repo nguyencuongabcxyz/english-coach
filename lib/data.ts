@@ -202,6 +202,50 @@ export async function classOverview(classId: string) {
     ? summaries.filter((s) => s.profile.weakest === weakestSkill(skillAvg)).length
     : 0;
 
+  // --- statistics for charts ---
+  // Class progress: each student's first scored session vs their latest one.
+  const firsts: Scores[] = [];
+  const latests: Scores[] = [];
+  for (const sm of summaries) {
+    const sc = sm.profile.sessions.map((x) => finalScores(x)).filter(Boolean) as Scores[];
+    if (sc.length >= 2) {
+      firsts.push(sc[0]);
+      latests.push(sc.at(-1)!);
+    }
+  }
+  const skillFirst = averageScores(firsts);
+  const skillLatest = averageScores(latests);
+
+  const weekly = weeklyStats(sessions, 8);
+
+  const levelOf = (s: StudentSummary) => {
+    const v = s.profile.current?.total;
+    if (v == null) return "none";
+    return v >= 8 ? "good" : v >= 6.5 ? "ok" : "low";
+  };
+  const distribution = {
+    good: summaries.filter((s) => levelOf(s) === "good").length,
+    ok: summaries.filter((s) => levelOf(s) === "ok").length,
+    low: summaries.filter((s) => levelOf(s) === "low").length,
+    none: summaries.filter((s) => levelOf(s) === "none").length,
+  };
+
+  const topicStats = new Map<string, { count: number; totals: number[] }>();
+  for (const s of sessions) {
+    const e = topicStats.get(s.topic_id) ?? { count: 0, totals: [] };
+    e.count++;
+    const sc = finalScores(s);
+    if (sc) e.totals.push(sc.total);
+    topicStats.set(s.topic_id, e);
+  }
+  const topics = [...topicStats.entries()]
+    .map(([topicId, e]) => ({
+      topicId,
+      count: e.count,
+      avg: e.totals.length ? round1(e.totals.reduce((a, b) => a + b, 0) / e.totals.length) : null,
+    }))
+    .sort((a, b) => b.count - a.count);
+
   return {
     summaries,
     totalStudents: students.length,
@@ -209,10 +253,56 @@ export async function classOverview(classId: string) {
     totalSessions: sessions.length,
     classAvg: classAvg?.total ?? null,
     skillAvg,
+    skillFirst,
+    skillLatest,
+    progressStudents: firsts.length,
     pendingTotal,
     weakestCount,
     needSupport: summaries.filter((s) => s.status === "support" || s.status === "inactive"),
+    weekly,
+    distribution,
+    topics,
   };
+}
+
+const DAY_MS = 86400000;
+const VN_OFFSET = 7 * 3600000;
+
+/** Monday 00:00 (Vietnam time) of the week containing `t`, as a UTC timestamp. */
+function weekStart(t: number) {
+  const local = new Date(t + VN_OFFSET);
+  const dow = (local.getUTCDay() + 6) % 7; // Monday = 0
+  const midnight = Date.UTC(local.getUTCFullYear(), local.getUTCMonth(), local.getUTCDate()) - VN_OFFSET;
+  return midnight - dow * DAY_MS;
+}
+
+export type WeekStat = { label: string; range: string; avg: number | null; count: number; students: number };
+
+/** Average total score, number of sessions and active students per week, oldest first. */
+export function weeklyStats(sessions: SessionRow[], weeks: number): WeekStat[] {
+  const thisWeek = weekStart(Date.now());
+  const out: WeekStat[] = [];
+  for (let w = weeks - 1; w >= 0; w--) {
+    const from = thisWeek - w * 7 * DAY_MS;
+    const to = from + 7 * DAY_MS;
+    const inWeek = sessions.filter((s) => {
+      const t = new Date(s.completed_at ?? s.started_at).getTime();
+      return t >= from && t < to;
+    });
+    const totals = inWeek.map((s) => finalScores(s)?.total).filter((v): v is number => v != null);
+    const d = (t: number) => {
+      const x = new Date(t + VN_OFFSET);
+      return `${String(x.getUTCDate()).padStart(2, "0")}/${String(x.getUTCMonth() + 1).padStart(2, "0")}`;
+    };
+    out.push({
+      label: w === 0 ? "Tuần này" : d(from),
+      range: `${d(from)} – ${d(to - DAY_MS)}`,
+      avg: totals.length ? round1(totals.reduce((a, b) => a + b, 0) / totals.length) : null,
+      count: inWeek.length,
+      students: new Set(inWeek.map((s) => s.student_id)).size,
+    });
+  }
+  return out;
 }
 
 export async function pendingReviews(classId: string) {
@@ -248,4 +338,9 @@ export async function suggestStudentCode(classId: string, className: string) {
     return Number.isFinite(n) ? Math.max(m, n) : m;
   }, 0);
   return `${prefix}${String(max + 1).padStart(3, "0")}`;
+}
+
+/** Whole days since a date (null when unknown). */
+export function daysSince(d: string | Date | null | undefined): number | null {
+  return d ? Math.floor((Date.now() - new Date(d).getTime()) / DAY_MS) : null;
 }

@@ -5,7 +5,10 @@ import { initials } from "@/components/AppShell";
 import { Breadcrumb, btn } from "@/components/ui";
 import { Icon, ICON } from "@/components/icons";
 import { fmt, level, SKILL_SHORT_VI, SKILL_VI, SKILLS, weakestSkill } from "@/lib/skills";
-import { getTopics } from "@/lib/topics-db";
+import { getAllTopics, getTopics } from "@/lib/topics-db";
+import { getTopic } from "@/lib/topics";
+import { finalScores } from "@/lib/types";
+import { CountColumns, Dumbbell, RankedBars, ScoreLineChart, SegmentedBar, Sparkline, TableView } from "@/components/charts";
 import { issueActivationCode } from "@/app/actions/teacher";
 import type { StudentSummary } from "@/lib/data";
 
@@ -23,7 +26,29 @@ const STATUS: Record<StudentSummary["status"], { label: string; bg: string; fg: 
 
 export default async function TeacherHome() {
   const user = await requireUser("teacher");
-  const [o, cls, topics] = await Promise.all([classOverview(user.class_id!), getClass(user.class_id!), getTopics(user.id)]);
+  const [o, cls, topics, allTopics] = await Promise.all([
+    classOverview(user.class_id!),
+    getClass(user.class_id!),
+    getTopics(user.id),
+    getAllTopics(user.id),
+  ]);
+  const weeksWithData = o.weekly.filter((w) => w.avg != null);
+  const trendFrom = weeksWithData[0];
+  const trendTo = weeksWithData.at(-1);
+  const trendDelta = trendFrom && trendTo && trendFrom !== trendTo ? trendTo.avg! - trendFrom.avg! : null;
+  const lowStudents = o.summaries
+    .filter((x) => x.profile.current && x.profile.current.total < 6.5)
+    .sort((a, b) => a.profile.current!.total - b.profile.current!.total);
+  const thisWeek = o.weekly.at(-1)!;
+  const lastWeek = o.weekly.at(-2);
+  const biggestGain =
+    o.skillFirst && o.skillLatest
+      ? [...SKILLS].sort((a, b) => o.skillLatest![b] - o.skillFirst![b] - (o.skillLatest![a] - o.skillFirst![a]))[0]
+      : null;
+  const trendText =
+    trendDelta == null
+      ? "Chưa đủ dữ liệu để so sánh giữa các tuần."
+      : `Điểm TB ${trendDelta >= 0 ? "tăng" : "giảm"} ${Math.abs(trendDelta).toFixed(1)} điểm: ${fmt(trendFrom!.avg)} (tuần ${trendFrom!.range}) → ${fmt(trendTo!.avg)} (tuần ${trendTo!.range}).`;
   const weakest = o.skillAvg ? weakestSkill(o.skillAvg) : null;
   const firstName = user.name.split(" ").at(-1);
 
@@ -128,6 +153,108 @@ export default async function TeacherHome() {
         </section>
       </div>
 
+      {/* ---------------- Class statistics ---------------- */}
+      <div className="flex items-end justify-between gap-3 px-5 pt-2 pb-3 sm:px-9">
+        <h2 className="m-0 text-lg font-bold">Thống kê lớp</h2>
+        <span className="text-xs text-muted">8 tuần gần nhất</span>
+      </div>
+      <div className="grid grid-cols-1 gap-4 px-5 pb-4 sm:px-9 xl:grid-cols-[3fr_2fr]">
+        <section className="flex min-w-0 flex-col gap-2 rounded-[22px] border border-line p-5">
+          <h3 className="m-0 text-[15px] font-bold">Điểm trung bình của lớp theo tuần</h3>
+          <p className="m-0 text-[13px] text-muted">{trendText}</p>
+          <ScoreLineChart
+            labels={o.weekly.map((w) => w.label)}
+            series={{ name: "Điểm TB lớp", values: o.weekly.map((w) => w.avg) }}
+            ariaLabel={`Điểm trung bình của lớp theo tuần: ${o.weekly.map((w) => `${w.range} ${w.avg ?? "không có"}`).join("; ")}`}
+          />
+          <TableView
+            head={["Tuần", "Điểm TB", "Lượt luyện", "Học sinh luyện"]}
+            rows={o.weekly.map((w) => [w.range, fmt(w.avg), w.count, w.students])}
+          />
+        </section>
+        <section className="flex min-w-0 flex-col gap-2 rounded-[22px] border border-line p-5">
+          <h3 className="m-0 text-[15px] font-bold">Lượt luyện tập mỗi tuần</h3>
+          <p className="m-0 text-[13px] text-muted">
+            Tuần này: <strong className="text-ink">{thisWeek.count} lượt</strong> từ {thisWeek.students} học sinh
+            {lastWeek ? ` (tuần trước ${lastWeek.count} lượt).` : "."}
+          </p>
+          <CountColumns
+            data={o.weekly.map((w) => ({ label: w.label, value: w.count, title: `Tuần ${w.range} · ${w.students} học sinh` }))}
+            unit="lượt"
+            height={200}
+            ariaLabel={`Lượt luyện tập mỗi tuần: ${o.weekly.map((w) => `${w.range} ${w.count}`).join("; ")}`}
+          />
+        </section>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 px-5 pb-6 sm:px-9 lg:grid-cols-2 xl:grid-cols-3">
+        <section className="flex min-w-0 flex-col gap-3 rounded-[22px] border border-line p-5">
+          <h3 className="m-0 text-[15px] font-bold">Tiến bộ theo kỹ năng</h3>
+          <p className="m-0 text-[13px] text-muted">
+            {o.skillFirst && o.skillLatest && biggestGain
+              ? `Buổi đầu tiên so với buổi gần nhất của ${o.progressStudents} học sinh. Tăng nhiều nhất: ${SKILL_VI[biggestGain].toLowerCase()} (+${(o.skillLatest[biggestGain] - o.skillFirst[biggestGain]).toFixed(1)}).`
+              : "Cần học sinh luyện ít nhất 2 buổi để so sánh."}
+          </p>
+          {o.skillFirst && o.skillLatest && (
+            <Dumbbell
+              beforeLabel="Buổi đầu tiên"
+              afterLabel="Buổi gần nhất"
+              rows={SKILLS.map((k) => ({ label: SKILL_VI[k], before: o.skillFirst![k], after: o.skillLatest![k] }))}
+            />
+          )}
+        </section>
+        <section className="flex min-w-0 flex-col gap-3 rounded-[22px] border border-line p-5">
+          <h3 className="m-0 text-[15px] font-bold">Học sinh theo mức điểm</h3>
+          <p className="m-0 text-[13px] text-muted">
+            Theo điểm TB 3 buổi gần nhất của mỗi học sinh.
+            {o.distribution.low > 0 ? ` ${o.distribution.low} học sinh dưới 6,5 điểm cần được kèm thêm.` : ""}
+          </p>
+          <SegmentedBar
+            total={o.totalStudents}
+            parts={[
+              { label: "Tốt (≥ 8)", value: o.distribution.good, color: "#3FAE7A", text: "#0B3D24" },
+              { label: "Khá (6,5–8)", value: o.distribution.ok, color: "#E3A92B", text: "#3D2A00" },
+              { label: "Cần cải thiện (< 6,5)", value: o.distribution.low, color: "#E0624A", text: "#FFFFFF" },
+              { label: "Chưa luyện", value: o.distribution.none, color: "#D9D6E2", text: "#16151A" },
+            ]}
+          />
+          {lowStudents.length > 0 && (
+            <div className="mt-1 flex flex-col gap-1.5">
+              <span className="text-xs font-semibold text-muted">Dưới 6,5 điểm · thấp nhất trước</span>
+              {lowStudents.slice(0, 5).map((s) => (
+                <Link
+                  key={s.user.id}
+                  href={`/teacher/students/${s.user.id}`}
+                  className="flex items-center justify-between gap-3 rounded-xl bg-soft px-3 py-2 text-sm hover:bg-line"
+                >
+                  <span className="truncate font-semibold">{s.user.name}</span>
+                  <span className="flex shrink-0 items-center gap-2 text-xs text-muted">
+                    {s.profile.weakest && <span>Yếu: {SKILL_SHORT_VI[s.profile.weakest]}</span>}
+                    <strong className="text-sm text-bad tabular-nums">{fmt(s.profile.current?.total)}</strong>
+                  </span>
+                </Link>
+              ))}
+              {lowStudents.length > 5 && <span className="text-xs text-muted">+{lowStudents.length - 5} học sinh khác</span>}
+            </div>
+          )}
+        </section>
+        <section className="flex min-w-0 flex-col gap-3 rounded-[22px] border border-line p-5 lg:col-span-2 xl:col-span-1">
+          <h3 className="m-0 text-[15px] font-bold">Chủ đề được luyện nhiều nhất</h3>
+          {o.topics.length ? (
+            <RankedBars
+              unit="lượt"
+              rows={o.topics.slice(0, 6).map((t) => ({
+                label: getTopic(allTopics, t.topicId)?.title ?? t.topicId,
+                value: t.count,
+                sub: t.avg != null ? `TB ${fmt(t.avg)}` : undefined,
+              }))}
+            />
+          ) : (
+            <p className="m-0 text-sm text-muted">Chưa có lượt luyện nào.</p>
+          )}
+        </section>
+      </div>
+
       <section className="mx-5 mb-8 overflow-hidden rounded-[22px] border border-line sm:mx-9">
         <div className="flex flex-wrap items-center justify-between gap-2 px-5 py-4">
           <h2 className="m-0 text-[17px] font-bold">Danh sách học sinh</h2>
@@ -139,10 +266,10 @@ export default async function TeacherHome() {
           </div>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[880px] border-collapse text-sm">
+          <table className="w-full min-w-[980px] border-collapse text-sm">
             <thead>
               <tr className="bg-soft text-left">
-                {["Học sinh", "Lượt luyện", "Chủ đề", "Điểm TB", "Kỹ năng yếu", "Tiến bộ", "Trạng thái", ""].map((h, i) => (
+                {["Học sinh", "Lượt luyện", "Chủ đề", "Điểm TB", "Xu hướng", "Kỹ năng yếu", "Tiến bộ", "Trạng thái", ""].map((h, i) => (
                   <th key={i} scope="col" className={`py-3 text-xs font-semibold text-muted ${i === 0 ? "px-5" : "px-3"}`}>
                     {h}
                   </th>
@@ -174,6 +301,15 @@ export default async function TeacherHome() {
                       {s.profile.topicsDone.filter((id) => topics.some((t) => t.id === id)).length}/{topics.length}
                     </td>
                     <td className="px-3 py-3 font-bold">{fmt(s.avg?.total)}</td>
+                    <td className="px-3 py-3">
+                      <Sparkline
+                        values={s.profile.sessions
+                          .slice(-8)
+                          .map((x) => finalScores(x)?.total)
+                          .filter((v): v is number => v != null)}
+                        label={`Xu hướng điểm của ${s.user.name}`}
+                      />
+                    </td>
                     <td className="px-3 py-3">{w ? SKILL_SHORT_VI[w] : "–"}</td>
                     <td className={`px-3 py-3 font-semibold ${s.trend == null ? "text-muted" : s.trend > 0 ? "text-good" : s.trend < 0 ? "text-bad" : "text-muted"}`}>
                       {s.trend == null ? "–" : `${s.trend > 0 ? "+" : s.trend === 0 ? "±" : ""}${s.trend.toFixed(1)}`}
