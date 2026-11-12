@@ -48,6 +48,16 @@ export async function POST(req: Request, ctx: RouteContext<"/api/sessions/[id]/a
         { status: 422 },
       );
     }
+    if (repeatsQuestion(text, question.q)) {
+      return NextResponse.json(
+        {
+          error:
+            "Có vẻ bạn đang đọc lại câu hỏi (hoặc micro thu tiếng loa). Hãy trả lời câu hỏi bằng ý của bạn nhé! Nếu dùng loa, hãy đeo tai nghe.",
+          code: "repeated_question",
+        },
+        { status: 422 },
+      );
+    }
     const evaluation = await evaluateAnswer({
       question: question.q,
       transcript: text,
@@ -77,4 +87,23 @@ export async function POST(req: Request, ctx: RouteContext<"/api/sessions/[id]/a
       : "AI đang bận, vui lòng thử lại sau ít phút.";
     return NextResponse.json({ error: msg }, { status: 502 });
   }
+}
+
+const words = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9'\s]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean);
+
+/** True when the transcript is (almost) only the question read aloud, e.g. mic picking up the speaker. */
+function repeatsQuestion(transcript: string, question: string) {
+  const t = words(transcript);
+  const q = words(question);
+  if (!t.length || !q.length) return false;
+  const qSet = new Set(q);
+  const overlap = t.filter((w) => qSet.has(w)).length / t.length; // share of the answer taken from the question
+  const covered = q.filter((w) => t.includes(w)).length / q.length; // share of the question that was read
+  const extra = t.length - q.length;
+  return covered >= 0.8 && overlap >= 0.8 && extra <= 4;
 }

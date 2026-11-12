@@ -6,6 +6,14 @@ import { Icon, ICON } from "@/components/icons";
 import { btn } from "@/components/ui";
 import { level, SKILL_SHORT_VI, SKILLS } from "@/lib/skills";
 import type { AnswerEvaluation } from "@/lib/types";
+import { RecordingPlayer } from "@/components/RecordingPlayer";
+
+function doneTitle(avg: number | null, isLast: boolean) {
+  if (avg != null && avg < 5) return "Câu trả lời chưa đạt, thử lại nhé! 💪";
+  if (isLast) return "Bạn đã trả lời xong các câu hỏi!";
+  if (avg != null && avg < 7) return "Khá rồi! Sẵn sàng cho câu tiếp theo?";
+  return "Tốt lắm! Sẵn sàng cho câu tiếp theo?";
+}
 
 type Answer = {
   id: string;
@@ -224,6 +232,9 @@ export function PracticeClient({ session, initialAnswers, initials, demo }: Prop
   }
 
   const nextOpen = session.questions.findIndex((_, i) => i !== idx && !answers[i]);
+  const answerAvg = answer?.evaluation
+    ? SKILLS.reduce((sum, k) => sum + answer.evaluation!.scores[k], 0) / SKILLS.length
+    : null;
   const isLast = answeredCount >= total || nextOpen === -1;
 
   return (
@@ -301,7 +312,7 @@ export function PracticeClient({ session, initialAnswers, initials, demo }: Prop
                 </span>
                 <span className="text-base leading-relaxed">{answer.transcript}</span>
                 {answer.hasAudio && (
-                  <audio controls preload="none" src={`/api/audio/${answer.id}`} className="h-9 w-full max-w-[320px]" />
+                  <RecordingPlayer src={`/api/audio/${answer.id}`} className="h-9 w-full max-w-[320px]" />
                 )}
               </div>
               <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-lilac text-[13px] font-bold">{initials}</span>
@@ -353,7 +364,7 @@ export function PracticeClient({ session, initialAnswers, initials, demo }: Prop
             {phase === "recorded" && blob && (
               <>
                 <span className="text-lg font-bold">Đã ghi âm câu trả lời · {fmtTime(blob.duration)}</span>
-                <audio controls src={blob.url} className="h-10 w-full max-w-[360px]" />
+                <RecordingPlayer src={blob.url} className="h-10 w-full max-w-[360px]" />
                 <span className="text-[13px] text-muted">
                   AI sẽ đánh giá phát âm, độ trôi chảy, từ vựng, ngữ pháp và nội dung.
                 </span>
@@ -380,15 +391,18 @@ export function PracticeClient({ session, initialAnswers, initials, demo }: Prop
 
             {phase === "done" && (
               <>
-                <span className="text-lg font-bold">
-                  {isLast ? "Bạn đã trả lời xong các câu hỏi!" : "Tốt lắm! Sẵn sàng cho câu tiếp theo?"}
-                </span>
+                <span className="text-lg font-bold">{doneTitle(answerAvg, isLast)}</span>
+                {answerAvg != null && answerAvg < 5 && (
+                  <span className="max-w-md text-[13px] text-muted">
+                    Hãy trả lời đúng câu hỏi bằng 2–3 câu: nói bạn làm gì, vì sao, và một ví dụ.
+                  </span>
+                )}
                 <div className="flex flex-wrap justify-center gap-2.5">
-                  <button onClick={() => setPhase("idle")} className={btn.light}>
+                  <button onClick={() => setPhase("idle")} className={answerAvg != null && answerAvg < 5 ? btn.dark : btn.light}>
                     Trả lời lại câu này
                   </button>
                   {!isLast && (
-                    <button onClick={() => goTo(nextOpen)} className={btn.dark}>
+                    <button onClick={() => goTo(nextOpen)} className={answerAvg != null && answerAvg < 5 ? btn.light : btn.dark}>
                       Câu tiếp theo <Icon d={ICON.chevronRight} size={16} width={2} />
                     </button>
                   )}
