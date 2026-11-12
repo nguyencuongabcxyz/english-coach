@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+/* Design tokens taken from the Claude Design source (design-src/). */
+@theme {
+  --font-sans: var(--font-jakarta), system-ui, sans-serif;
+
+  --color-ink: #16151a;
+  --color-muted: #5e5c68;
+  --color-canvas: #e4e2ea;
+  --color-shell: #f1eff6;
+  --color-line: #eceaf1;
+  --color-line-strong: #d9d6e2;
+  --color-soft: #f6f5f9;
+  --color-chip: #f3f2f7;
+  --color-link: #3a3ba8;
+
+  --color-lilac: #cdd0f8;
+  --color-lilac-deep: #b9bdef;
+  --color-lilac-ink: #2e2f5c;
+  --color-lilac-soft: #eeeffd;
+  --color-mint: #c8f2dd;
+  --color-mint-deep: #a9e3c6;
+  --color-mint-ink: #14533a;
+  --color-sand: #fbe5bc;
+  --color-sand-deep: #efd39f;
+  --color-sand-ink: #6b4a10;
+  --color-peach: #f6cbbf;
+  --color-peach-deep: #e9b3a5;
+  --color-peach-ink: #7a2d1c;
+  --color-sky: #cde6f7;
+  --color-sky-deep: #b0d3ec;
+  --color-sky-ink: #1f4a66;
+
+  --color-good: #11663f;
+  --color-good-bg: #d9f5e6;
+  --color-good-bar: #3fae7a;
+  --color-ok: #7a4d00;
+  --color-ok-bg: #fcebc8;
+  --color-ok-bar: #e3a92b;
+  --color-bad: #9b2c1a;
+  --color-bad-bg: #fbd9d2;
+  --color-bad-bar: #e0624a;
+  --color-rec: #c2412d;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button {
+    font-family: inherit;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-link);
+    outline-offset: 2px;
+  }
+}
+
+@keyframes eq {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+.eq-bar {
+  animation: eq 0.9s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.spin {
+  animation: spin 0.9s linear infinite;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
