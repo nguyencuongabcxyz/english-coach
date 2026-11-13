@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
 import { startTopic } from "@/app/actions/practice";
 import { Icon, ICON } from "@/components/icons";
@@ -117,6 +118,12 @@ export function TopicsBrowser({ topics }: { topics: T[] }) {
                 {t.sessions > 0 ? "Đã luyện" : "Chưa luyện"}
               </span>
               <span className="rounded-full bg-white px-2.5 py-[5px] text-xs font-semibold">{t.sessions} buổi</span>
+              <Link
+                href={`/topics/${t.id}/games`}
+                className="press ml-auto inline-flex min-h-8 items-center gap-1.5 rounded-full bg-ink px-3 text-xs font-bold text-white hover:opacity-90"
+              >
+                🎮 Trò chơi từ vựng
+              </Link>
             </div>
           </section>
         ))}

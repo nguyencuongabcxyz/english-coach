@@ -3,21 +3,24 @@
 import { useRef, useState } from "react";
 import { Icon, ICON } from "./icons";
 
+/** Reads English text aloud with the browser's speech synthesis. */
+export function speak(text: string) {
+  if (!("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-GB";
+  u.rate = 0.85;
+  const v = window.speechSynthesis.getVoices().find((x) => x.lang.startsWith("en"));
+  if (v) u.voice = v;
+  window.speechSynthesis.speak(u);
+}
+
 /** Reads English text aloud with the browser's speech synthesis ("Nghe mẫu"). */
 export function SpeakButton({ text, label = "Nghe mẫu", className = "" }: { text: string; label?: string; className?: string }) {
   return (
     <button
       type="button"
-      onClick={() => {
-        if (!("speechSynthesis" in window)) return;
-        window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = "en-GB";
-        u.rate = 0.85;
-        const v = window.speechSynthesis.getVoices().find((x) => x.lang.startsWith("en"));
-        if (v) u.voice = v;
-        window.speechSynthesis.speak(u);
-      }}
+      onClick={() => speak(text)}
       className={`inline-flex min-h-8 cursor-pointer items-center gap-1.5 rounded-full bg-white px-3 text-xs font-semibold hover:bg-line ${className}`}
     >
       <Icon d={ICON.speaker} size={12} width={2} /> {label}

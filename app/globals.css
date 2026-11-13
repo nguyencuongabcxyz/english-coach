@@ -249,3 +249,93 @@
     transform: none;
   }
 }
+
+/* ───────── Vocabulary games ───────── */
+/* A falling word: drops to the ground line and turns red near the end. */
+@keyframes game-fall {
+  0% {
+    top: -48px;
+  }
+  72% {
+    background: #fff;
+    color: var(--color-ink);
+  }
+  85% {
+    background: var(--color-bad-bg);
+    color: var(--color-bad);
+  }
+  100% {
+    top: calc(100% - 66px);
+    background: var(--color-bad-bg);
+    color: var(--color-bad);
+    box-shadow: 0 0 0 3px #e0624a66;
+  }
+}
+.game-fall {
+  animation-name: game-fall;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+@keyframes game-pop {
+  40% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+}
+.game-pop {
+  animation: game-pop 0.45s var(--ease-out-soft) forwards;
+}
+@keyframes float-up {
+  to {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+}
+.float-up {
+  animation: float-up 0.9s ease-out forwards;
+}
+@keyframes count-pop {
+  from {
+    opacity: 0;
+    transform: scale(1.8);
+  }
+}
+.count-pop {
+  animation: count-pop 0.45s var(--ease-spring) both;
+}
+@keyframes shake {
+  20%,
+  60% {
+    transform: translateX(-5px);
+  }
+  40%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+.shake {
+  animation: shake 0.4s ease-in-out;
+}
+@keyframes confetti {
+  from {
+    transform: translateY(-30px) rotate(0deg);
+  }
+  to {
+    transform: translateY(105vh) rotate(720deg);
+  }
+}
+.confetti {
+  position: absolute;
+  top: 0;
+  width: 8px;
+  height: 12px;
+  border-radius: 2px;
+  animation: confetti linear both;
+}
+.game-paused,
+.game-paused * {
+  animation-play-state: paused !important;
+}
