@@ -438,7 +438,7 @@ export function PracticeClient({ session, initialAnswers, initials, demo }: Prop
           )}
           {demo && (
             <p className="m-0 text-xs text-muted">
-              Chế độ demo: chưa cấu hình OPENAI_API_KEY nên kết quả AI là mô phỏng.
+              Chế độ demo: chưa cấu hình khoá AI (OPENAI_API_KEY hoặc GROQ_API_KEY) nên kết quả AI là mô phỏng.
             </p>
           )}
         </section>

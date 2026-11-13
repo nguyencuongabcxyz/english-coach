@@ -3,7 +3,9 @@
 Web app luyện nói tiếng Anh cho học sinh THPT, viết theo tài liệu *PHẦN 2 – THIẾT KẾ SẢN PHẨM* và bản thiết kế Claude Design.
 
 - **Next.js 16** (App Router, Server Actions) + **Tailwind CSS 4**, font Plus Jakarta Sans
-- **AI: OpenAI** – `whisper-1` chuyển giọng nói thành văn bản (có mốc thời gian từng từ để đo độ trôi chảy), ChatGPT (`gpt-5.4-mini`) chấm 5 tiêu chí và viết phản hồi
+- **AI: OpenAI hoặc Groq (miễn phí)** – Whisper chuyển giọng nói thành văn bản (có mốc thời gian từng từ để đo độ trôi chảy), mô hình chat chấm 5 tiêu chí và viết phản hồi. Chọn bằng biến `AI_PROVIDER`:
+  - `openai`: `whisper-1` + `gpt-5.4-mini` (trả phí, cần `OPENAI_API_KEY`)
+  - `groq`: `whisper-large-v3-turbo` + `openai/gpt-oss-120b` (gói miễn phí có giới hạn lượt gọi, cần `GROQ_API_KEY` từ https://console.groq.com/keys)
 - **Postgres**: Neon trên Vercel; khi chạy local không cần cài gì (PGlite lưu ở `.data/`)
 - Giao diện responsive: desktop (sidebar), tablet & điện thoại (thanh menu dưới + menu trượt)
 
@@ -27,7 +29,7 @@ Web app luyện nói tiếng Anh cho học sinh THPT, viết theo tài liệu *P
 
 ```bash
 npm install
-cp .env.example .env.local   # điền OPENAI_API_KEY nếu muốn dùng AI thật
+cp .env.example .env.local   # điền OPENAI_API_KEY hoặc GROQ_API_KEY nếu muốn dùng AI thật
 npm run dev
 ```
 
@@ -37,14 +39,14 @@ Lần chạy đầu tự tạo dữ liệu mẫu (xem `lib/seed.ts`):
 - Học sinh: `HS-11A2-014` (Nguyễn Minh Anh) / `demo1234`
 - Học sinh chưa kích hoạt: `HS-11A2-022`, mã kích hoạt `QX7P2L`
 
-Xoá thư mục `.data/` để tạo lại dữ liệu mẫu. Không có `OPENAI_API_KEY` thì app chạy **chế độ demo** (kết quả AI mô phỏng).
+Xoá thư mục `.data/` để tạo lại dữ liệu mẫu. Không có khoá AI (`OPENAI_API_KEY` / `GROQ_API_KEY`) thì app chạy **chế độ demo** (kết quả AI mô phỏng).
 
 ## Deploy lên Vercel
 
 1. Đưa code lên GitHub rồi Import project trên Vercel (hoặc `vercel deploy`).
 2. Thêm database: Vercel → Storage → **Neon Postgres** (tự tạo biến `DATABASE_URL`).
 3. (Tuỳ chọn) Storage → **Blob** để lưu bản ghi âm cho giáo viên nghe lại (`BLOB_READ_WRITE_TOKEN`).
-4. Environment Variables: `OPENAI_API_KEY`, `SESSION_SECRET` (chuỗi ngẫu nhiên dài), `SEED_PASSWORD` (mật khẩu cho các tài khoản mẫu, đừng để mặc định `demo1234` khi chạy thật).
+4. Environment Variables: `AI_PROVIDER` (`openai` hoặc `groq`) + khoá tương ứng (`OPENAI_API_KEY` / `GROQ_API_KEY`; có thể đặt cả hai rồi đổi `AI_PROVIDER` để chuyển qua lại), `SESSION_SECRET` (chuỗi ngẫu nhiên dài), `SEED_PASSWORD` (mật khẩu cho các tài khoản mẫu, đừng để mặc định `demo1234` khi chạy thật).
 5. Deploy. Bảng và dữ liệu mẫu được tạo tự động ở request đầu tiên.
 
 > Điểm do AI chấm chỉ là phản hồi tham khảo; giáo viên là người đánh giá cuối cùng (nguyên tắc 5).

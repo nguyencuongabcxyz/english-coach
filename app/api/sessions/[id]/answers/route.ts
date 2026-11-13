@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getUser } from "@/lib/auth";
 import { sql } from "@/lib/db";
 import { getSession } from "@/lib/data";
-import { evaluateAnswer, transcribe } from "@/lib/ai";
+import { aiProviderLabel, evaluateAnswer, transcribe } from "@/lib/ai";
 import { saveAudio } from "@/lib/storage";
 import type { AnswerRow } from "@/lib/types";
 
@@ -83,7 +83,7 @@ export async function POST(req: Request, ctx: RouteContext<"/api/sessions/[id]/a
   } catch (e) {
     console.error("answer processing failed", e);
     const msg = e instanceof Error && /api key|401|Incorrect API key/i.test(e.message)
-      ? "Khoá OpenAI API không hợp lệ. Liên hệ quản trị viên."
+      ? `Khoá ${aiProviderLabel()} API không hợp lệ. Liên hệ quản trị viên.`
       : "AI đang bận, vui lòng thử lại sau ít phút.";
     return NextResponse.json({ error: msg }, { status: 502 });
   }

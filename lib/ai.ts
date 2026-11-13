@@ -5,17 +5,54 @@ import type { AnswerEvaluation, SessionSummary, SpeechMetrics } from "./types";
 
 /**
  * AI processing (Module 3 + 4):
- *  1. Speech-to-text with word timestamps (whisper-1) → transcript + fluency metrics.
- *  2. ChatGPT scores the answer on 5 criteria and writes short, actionable feedback.
- * Without OPENAI_API_KEY the app runs in demo mode with simulated results.
+ *  1. Speech-to-text with word timestamps (Whisper) → transcript + fluency metrics.
+ *  2. A chat model scores the answer on 5 criteria and writes short, actionable feedback.
+ *
+ * Two providers, both via the OpenAI-compatible API (switch with AI_PROVIDER):
+ *  - "openai": paid, OPENAI_API_KEY, whisper-1 + gpt-5.4-mini
+ *  - "groq":   free tier, GROQ_API_KEY, whisper-large-v3-turbo + openai/gpt-oss-120b
+ * Without a key for the chosen provider the app runs in demo mode with simulated results.
  */
 
-export const aiEnabled = () => Boolean(process.env.OPENAI_API_KEY);
-const MODEL = () => process.env.OPENAI_MODEL || "gpt-5.4-mini";
-const STT_MODEL = () => process.env.OPENAI_TRANSCRIBE_MODEL || "whisper-1";
+type Provider = "openai" | "groq";
 
-let client: OpenAI | null = null;
-const openai = () => (client ??= new OpenAI({ apiKey: process.env.OPENAI_API_KEY }));
+const PROVIDERS = {
+  openai: {
+    label: "OpenAI",
+    keyVar: "OPENAI_API_KEY",
+    baseURL: undefined,
+    model: () => process.env.OPENAI_MODEL || "gpt-5.4-mini",
+    sttModel: () => process.env.OPENAI_TRANSCRIBE_MODEL || "whisper-1",
+  },
+  groq: {
+    label: "Groq",
+    keyVar: "GROQ_API_KEY",
+    baseURL: "https://api.groq.com/openai/v1",
+    model: () => process.env.GROQ_MODEL || "openai/gpt-oss-120b",
+    sttModel: () => process.env.GROQ_TRANSCRIBE_MODEL || "whisper-large-v3-turbo",
+  },
+} as const;
+
+/** AI_PROVIDER wins; otherwise use whichever key is set (OpenAI first). */
+function provider(): Provider {
+  const p = process.env.AI_PROVIDER?.trim().toLowerCase();
+  if (p === "openai" || p === "groq") return p;
+  if (!process.env.OPENAI_API_KEY && process.env.GROQ_API_KEY) return "groq";
+  return "openai";
+}
+const cfg = () => PROVIDERS[provider()];
+
+export const aiProviderLabel = () => cfg().label;
+export const aiKeyVar = () => cfg().keyVar;
+export const aiEnabled = () => Boolean(process.env[cfg().keyVar]);
+const MODEL = () => cfg().model();
+const STT_MODEL = () => cfg().sttModel();
+
+const clients: Partial<Record<Provider, OpenAI>> = {};
+const openai = () => {
+  const p = provider();
+  return (clients[p] ??= new OpenAI({ apiKey: process.env[PROVIDERS[p].keyVar], baseURL: PROVIDERS[p].baseURL }));
+};
 
 const FILLERS = new Set(["um", "uh", "er", "erm", "ah", "hmm", "mm", "eh"]);
 
@@ -31,7 +68,8 @@ export async function transcribe(
   }
   const file = await toFile(audio, filename, { type: audio.type || "audio/webm" });
   const model = STT_MODEL();
-  if (model !== "whisper-1") {
+  // Only Whisper models return word timings (OpenAI whisper-1, Groq whisper-large-v3[-turbo]).
+  if (!/whisper/i.test(model)) {
     const r = await openai().audio.transcriptions.create({ file, model, language: "en", response_format: "json" });
     const text = r.text.trim();
     const words = text.split(/\s+/).filter(Boolean).length;
@@ -218,7 +256,7 @@ export async function summarizeSession(input: {
 
 async function chatJSON<T>(system: string, user: string, name: string, schema: object): Promise<T> {
   const model = MODEL();
-  const reasoning = /^(gpt-5|o\d)/.test(model) ? { reasoning_effort: "low" as const } : {};
+  const reasoning = /^(gpt-5|o\d|openai\/gpt-oss)/.test(model) ? { reasoning_effort: "low" as const } : {};
   const r = await openai().chat.completions.create({
     model,
     ...reasoning,
